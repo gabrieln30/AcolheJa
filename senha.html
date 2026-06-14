@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá — Redefinir Senha</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── Escopo exclusivo desta página ── */
+        .reset-wrapper {
+            min-height: calc(100vh - 112px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            background: whitesmoke;
+        }
+
+        [data-theme="dark"] .reset-wrapper {
+            background: #0f1117;
+        }
+
+        /* Card principal */
+        .reset-card {
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 56px rgba(43,93,167,0.14);
+            overflow: hidden;
+            position: relative;
+        }
+
+        [data-theme="dark"] .reset-card {
+            background: #1a1d27;
+            box-shadow: 0 20px 56px rgba(0,0,0,0.45);
+        }
+
+        /* Faixa de progresso no topo */
+        .reset-progress-bar {
+            height: 5px;
+            background: #e8edf3;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .reset-progress-bar { background: #2d3148; }
+
+        .reset-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2b5da7, #32bcad);
+            border-radius: 0 3px 3px 0;
+            transition: width 0.55s cubic-bezier(0.22,1,0.36,1);
+            width: 33.3%;
+        }
+
+        /* Indicador de passos */
+        .reset-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: 22px 32px 0;
+        }
+
+        .step-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            position: relative;
+        }
+
+        .step-node:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: calc(50% + 16px);
+            right: calc(-50% + 16px);
+            height: 2px;
+            background: #e0e6ed;
+            transition: background 0.4s ease;
+        }
+
+        [data-theme="dark"] .step-node:not(:last-child)::after { background: #2d3148; }
+
+        .step-node.done:not(:last-child)::after,
+        .step-node.active:not(:last-child)::after { background: #32bcad; }
+
+        .step-bubble {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2.5px solid #e0e6ed;
+            background: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #b0b8c8;
+            transition: all 0.35s ease;
+            z-index: 1;
+        }
+
+        [data-theme="dark"] .step-bubble {
+            border-color: #2d3148;
+            background: #23273a;
+            color: #4a5568;
+        }
+
+        .step-node.active .step-bubble {
+            border-color: #2b5da7;
+            background: #2b5da7;
+            color: white;
+            box-shadow: 0 4px 12px rgba(43,93,167,0.3);
+            transform: scale(1.1);
+        }
+
+        .step-node.done .step-bubble {
+            border-color: #32bcad;
+            background: #32bcad;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #b0b8c8;
+            letter-spacing: 0.4px;
+            transition: color 0.3s;
+        }
+
+        [data-theme="dark"] .step-label { color: #4a5568; }
+
+        .step-node.active .step-label { color: #2b5da7; }
+        .step-node.done  .step-label  { color: #32bcad; }
+
+        /* Corpo do card */
+        .reset-body {
+            padding: 28px 40px 38px;
+        }
+
+        /* Viewport dos passos */
+        .steps-viewport {
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+        }
+
+        .reset-step {
+            display: none;
+            animation: stepSlideIn 0.38s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        .reset-step.active { display: block; }
+
+        .reset-step.saindo {
+            animation: stepSlideOut 0.3s cubic-bezier(0.55,0,0.45,1) forwards;
+        }
+
+        @keyframes stepSlideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes stepSlideOut {
+            from { opacity: 1; transform: translateX(0);  position: absolute; width: 100%; }
+            to   { opacity: 0; transform: translateX(-40px); position: absolute; width: 100%; }
+        }
+
+        /* Ícone do passo */
+        .step-icon-wrap {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .step-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .step-icon.blue  { background: #e8f0fc; color: #2b5da7; }
+        .step-icon.teal  { background: #e0f7f5; color: #32bcad; }
+        .step-icon.green { background: #e8f7f0; color: #27ae60; }
+
+        [data-theme="dark"] .step-icon.blue  { background: #1a2a45; color: #7aa8f7; }
+        [data-theme="dark"] .step-icon.teal  { background: #0a2520; color: #32bcad; }
+        [data-theme="dark"] .step-icon.green { background: #0a2015; color: #2ecc71; }
+
+        .step-title {
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: #1e2a3a;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+            text-align: center;
+        }
+
+        [data-theme="dark"] .step-title { color: #e8ecf4; }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #6b7a99;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        /* Campos */
+        .reset-field {
+            margin-bottom: 18px;
+        }
+
+        .reset-field label {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 800;
+            color: #1e2a3a;
+            margin-bottom: 8px;
+        }
+
+        [data-theme="dark"] .reset-field label { color: #c5cfe6; }
+
+        .reset-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid #f3824a;
+            border-radius: 50px;
+            padding: 10px 18px;
+            background: white;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        [data-theme="dark"] .reset-input-wrap {
+            background: #23273a;
+            border-color: #3d4a72;
+        }
+
+        .reset-input-wrap:focus-within {
+            box-shadow: 0 0 0 4px rgba(243,130,74,0.15);
+        }
+
+        .reset-input-wrap.valid   { border-color: #27ae60; }
+        .reset-input-wrap.invalid { border-color: #e53935; }
+
+        .reset-input-wrap.valid:focus-within   { box-shadow: 0 0 0 4px rgba(39,174,96,0.15); }
+        .reset-input-wrap.invalid:focus-within { box-shadow: 0 0 0 4px rgba(229,57,53,0.15); }
+
+        .reset-input-wrap i.field-icon {
+            color: #9aa5b8;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .reset-input-wrap input {
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #1e2a3a;
+            font-family: inherit;
+            font-size: 0.98rem;
+            width: 100%;
+        }
+
+        [data-theme="dark"] .reset-input-wrap input { color: #e8ecf4; }
+
+        .reset-input-wrap input::placeholder { color: #9aa5b8; }
+
+        .reset-input-wrap .toggle-ver {
+            cursor: pointer;
+            color: #9aa5b8;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        .reset-input-wrap .toggle-ver:hover { color: #f3824a; }
+
+        /* Feedback de força da senha */
+        .senha-forca {
+            margin-top: 10px;
+        }
+
+        .forca-barras {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .forca-barra {
+            flex: 1;
+            height: 5px;
+            border-radius: 3px;
+            background: #e0e6ed;
+            transition: background 0.3s ease;
+        }
+
+        [data-theme="dark"] .forca-barra { background: #2d3148; }
+
+        .forca-barra.fraca  { background: #e53935; }
+        .forca-barra.media  { background: #f3a000; }
+        .forca-barra.forte  { background: #27ae60; }
+
+        .forca-texto {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #9aa5b8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Dicas de requisitos */
+        .senha-requisitos {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px 12px;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: #9aa5b8;
+            transition: color 0.2s;
+        }
+
+        .req-item i {
+            font-size: 0.7rem;
+            width: 14px;
+            text-align: center;
+        }
+
+        .req-item.ok   { color: #27ae60; }
+        .req-item.fail { color: #9aa5b8; }
+
+        /* Código OTP */
+        .otp-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 8px 0 6px;
+        }
+
+        .otp-input {
+            width: 52px;
+            height: 58px;
+            border: 2px solid #e0e6ed;
+            border-radius: 12px;
+            background: #f5f7fa;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2b5da7;
+            outline: none;
+            transition: all 0.2s ease;
+            caret-color: transparent;
+        }
+
+        [data-theme="dark"] .otp-input {
+            background: #23273a;
+            border-color: #2d3148;
+            color: #7aa8f7;
+        }
+
+        .otp-input:focus {
+            border-color: #2b5da7;
+            background: #e8f0fc;
+            box-shadow: 0 0 0 3px rgba(43,93,167,0.15);
+            transform: scale(1.05);
+        }
+
+        [data-theme="dark"] .otp-input:focus {
+            background: #1a2a45;
+        }
+
+        .otp-input.preenchido { border-color: #32bcad; }
+
+        .otp-dica {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #9aa5b8;
+            margin-bottom: 8px;
+        }
+
+        /* Email mascarado */
+        .email-masked {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f4fc;
+            border: 1px solid #dde3ef;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #2b5da7;
+            margin-bottom: 20px;
+        }
+
+        [data-theme="dark"] .email-masked {
+            background: #1a2a45;
+            border-color: #2d3148;
+            color: #7aa8f7;
+        }
+
+        /* Timer reenvio */
+        .reenvio-wrap {
+            text-align: center;
+            font-size: 0.84rem;
+            color: #9aa5b8;
+            margin-top: 12px;
+        }
+
+        .reenvio-wrap a {
+            color: #f3824a;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .reenvio-wrap a:hover { text-decoration: underline; }
+
+        .reenvio-wrap a.desabilitado {
+            color: #9aa5b8;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        /* Botão principal */
+        .btn-reset {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #2b5da7, #1a417a);
+            color: white;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(43,93,167,0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 24px;
+        }
+
+        .btn-reset:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(43,93,167,0.38);
+        }
+
+        .btn-reset:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset.laranja {
+            background: linear-gradient(135deg, #f3824a, #d16935);
+            box-shadow: 0 6px 20px rgba(243,130,74,0.28);
+        }
+
+        .btn-reset.laranja:hover:not(:disabled) {
+            box-shadow: 0 10px 28px rgba(243,130,74,0.4);
+        }
+
+        .btn-reset.verde {
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            box-shadow: 0 6px 20px rgba(39,174,96,0.28);
+        }
+
+        /* Tela de sucesso */
+        .sucesso-animado {
+            text-align: center;
+            padding: 16px 0 8px;
+        }
+
+        .sucesso-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            color: white;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 28px rgba(39,174,96,0.32);
+            animation: successPop 0.65s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+
+        @keyframes successPop {
+            from { transform: scale(0) rotate(-20deg); opacity: 0; }
+            to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+        }
+
+        .sucesso-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: #1e2a3a;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        [data-theme="dark"] .sucesso-title { color: #e8ecf4; }
+
+        .sucesso-desc {
+            font-size: 0.92rem;
+            color: #6b7a99;
+            line-height: 1.6;
+            margin-bottom: 28px;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-ir-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #f3824a, #d16935);
+            color: white;
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(243,130,74,0.28);
+            transition: all 0.3s ease;
+        }
+
+        .btn-ir-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(243,130,74,0.4);
+        }
+
+        /* Link voltar */
+        .voltar-login {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.88rem;
+            color: #9aa5b8;
+        }
+
+        .voltar-login a {
+            color: #f3824a;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .voltar-login a:hover { text-decoration: underline; }
+
+        /* Alerta inline */
+        .alerta-inline {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .alerta-inline.erro {
+            background: #fdecea;
+            border: 1px solid #f5c6c4;
+            color: #c62828;
+        }
+
+        .alerta-inline.ok {
+            background: #e8f7f0;
+            border: 1px solid #b2dfdb;
+            color: #1b5e20;
+        }
+
+        [data-theme="dark"] .alerta-inline.erro {
+            background: #2a0a0a;
+            border-color: #5c1a1a;
+            color: #ff8a80;
+        }
+
+        [data-theme="dark"] .alerta-inline.ok {
+            background: #0a2015;
+            border-color: #1a5c3a;
+            color: #69f0ae;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Aplica dark mode imediatamente -->
+    <script>
+        (function() {
+            const t = localStorage.getItem('acolheja_tema') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="reset-wrapper">
+        <div class="reset-card">
+
+            <!-- Barra de progresso -->
+            <div class="reset-progress-bar">
+                <div class="reset-progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Indicador de passos -->
+            <div class="reset-steps">
+                <div class="step-node active" id="node-1">
+                    <div class="step-bubble" id="bubble-1"><i class="fas fa-envelope"></i></div>
+                    <span class="step-label">E-mail</span>
+                </div>
+                <div class="step-node" id="node-2">
+                    <div class="step-bubble" id="bubble-2"><i class="fas fa-key"></i></div>
+                    <span class="step-label">Código</span>
+                </div>
+                <div class="step-node" id="node-3">
+                    <div class="step-bubble" id="bubble-3"><i class="fas fa-lock"></i></div>
+                    <span class="step-label">Nova senha</span>
+                </div>
+            </div>
+
+            <!-- Corpo -->
+            <div class="reset-body">
+                <div class="steps-viewport">
+
+                    <!-- ── PASSO 1: E-mail ── -->
+                    <div class="reset-step active" id="passo-1">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon blue">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </div>
+                        </div>
+                        <h2 class="step-title">Redefinir sua senha</h2>
+                        <p class="step-desc">Digite o e-mail da sua conta. Vamos enviar um código de verificação para você.</p>
+
+                        <div class="reset-field">
+                            <label for="inputEmail">Seu e-mail</label>
+                            <div class="reset-input-wrap" id="wrapEmail">
+                                <i class="fas fa-envelope field-icon"></i>
+                                <input type="email" id="inputEmail" placeholder="seu@email.com" autocomplete="email">
+                                <i class="fas fa-check" id="emailCheck" style="color:#27ae60; display:none;"></i>
+                            </div>
+                        </div>
+
+                        <div class="alerta-inline erro" id="alertaEmail">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span id="alertaEmailTexto"></span>
+                        </div>
+
+                        <button class="btn-reset" id="btnEnviarCodigo" onclick="enviarCodigo()">
+                            <i class="fas fa-paper-plane"></i> Enviar código
+                        </button>
+
+                        <div class="voltar-login">
+                            <a href="login.html"><i class="fas fa-arrow-left"></i> Voltar ao login</a>
+                        </div>
+                    </div>
+
+                    <!-- ── PASSO 2: Código OTP ── -->
+                    <div class="reset-step" id="passo-2">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon teal">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                        </div>
+                        <h2 class="step-title">Verifique seu e-mail</h2>
+                        <p class="step-desc">Enviamos um código de 6 dígitos para</p>
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <span class="email-masked" id="emailMasked">
+                                <i class="fas fa-envelope"></i>
+                                <span id="emailMaskedTexto">car***@email.com</span>
+                            </span>
+                        </div>
+
+                        <p class="otp-dica">Digite o código abaixo</p>
+                        <div class="otp-group" id="otpGroup">
+                            <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                            <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                            <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                            <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                            <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                            <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+                        </div>
+
+                        <div class="alerta-inline erro" id="alertaCodigo">
+                            <i class="fas fa-times-circle"></i>
+                            <span id="alertaCodigoTexto">Código incorreto. Tente novamente.</span>
+                        </div>
+
+                        <button class="btn-reset laranja" id="btnValidarCodigo" onclick="validarCodigo()">
+                            <i class="fas fa-check-circle"></i> Validar código
+                        </button>
+
+                        <div class="reenvio-wrap">
+                            Não recebeu? <a id="linkReenvio" class="desabilitado" onclick="reenviarCodigo()">Reenviar código</a>
+                            <span id="timerReenvio"> em <strong id="contadorReenvio">60</strong>s</span>
+                        </div>
+                    </div>
+
+                    <!-- ── PASSO 3: Nova senha ── -->
+                    <div class="reset-step" id="passo-3">
+                        <div class="step-icon-wrap">
+                            <div class="step-icon green">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <h2 class="step-title">Crie uma nova senha</h2>
+                        <p class="step-desc">Escolha uma senha segura. Ela deve ter pelo menos 8 caracteres.</p>
+
+                        <div class="reset-field">
+                            <label for="novaSenha">Nova senha</label>
+                            <div class="reset-input-wrap" id="wrapNovaSenha">
+                                <i class="fas fa-lock field-icon"></i>
+                                <input type="password" id="novaSenha" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+                                <i class="fas fa-eye toggle-ver" id="toggleNova" onclick="toggleVer('novaSenha','toggleNova')"></i>
+                            </div>
+
+                            <!-- Força da senha -->
+                            <div class="senha-forca" id="forcaWrap" style="display:none;">
+                                <div class="forca-barras">
+                                    <div class="forca-barra" id="b1"></div>
+                                    <div class="forca-barra" id="b2"></div>
+                                    <div class="forca-barra" id="b3"></div>
+                                    <div class="forca-barra" id="b4"></div>
+                                </div>
+                                <div class="forca-texto">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span id="forcaTexto">Digite sua senha</span>
+                                </div>
+                            </div>
+
+                            <!-- Requisitos -->
+                            <div class="senha-requisitos">
+                                <div class="req-item" id="req-len">
+                                    <i class="fas fa-circle"></i> Mínimo 8 caracteres
+                                </div>
+                                <div class="req-item" id="req-upper">
+                                    <i class="fas fa-circle"></i> Letra maiúscula
+                                </div>
+                                <div class="req-item" id="req-num">
+                                    <i class="fas fa-circle"></i> Um número
+                                </div>
+                                <div class="req-item" id="req-special">
+                                    <i class="fas fa-circle"></i> Caractere especial
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="reset-field">
+                            <label for="confirmaSenha">Confirmar nova senha</label>
+                            <div class="reset-input-wrap" id="wrapConfirma">
+                                <i class="fas fa-lock field-icon"></i>
+                                <input type="password" id="confirmaSenha" placeholder="Repita a nova senha" autocomplete="new-password">
+                                <i class="fas fa-eye toggle-ver" id="toggleConfirma" onclick="toggleVer('confirmaSenha','toggleConfirma')"></i>
+                            </div>
+                        </div>
+
+                        <div class="alerta-inline erro" id="alertaSenha">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span id="alertaSenhaTexto"></span>
+                        </div>
+
+                        <button class="btn-reset verde" id="btnRedefinir" onclick="redefinirSenha()">
+                            <i class="fas fa-shield-halved"></i> Redefinir senha
+                        </button>
+                    </div>
+
+                    <!-- ── PASSO 4: Sucesso ── -->
+                    <div class="reset-step" id="passo-sucesso">
+                        <div class="sucesso-animado">
+                            <div class="sucesso-circle">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h2 class="sucesso-title">Senha redefinida!</h2>
+                            <p class="sucesso-desc">
+                                Sua senha foi atualizada com sucesso. Você já pode fazer login com sua nova senha.
+                            </p>
+                            <a href="login.html" class="btn-ir-login">
+                                <i class="fas fa-sign-in-alt"></i> Ir para o Login
+                            </a>
+                        </div>
+                    </div>
+
+                </div><!-- /steps-viewport -->
+            </div><!-- /reset-body -->
+        </div><!-- /reset-card -->
+    </div><!-- /reset-wrapper -->
+
+    <script src="javaScript.js" defer></script>
+    <script>
+    /* ================================================================
+       LÓGICA DE REDEFINIÇÃO DE SENHA
+       Simulação front-end (sem back-end real)
+    ================================================================ */
+
+    let passoAtual = 1;
+    let emailDigitado = '';
+    let codigoGerado  = '';
+    let timerReenvio;
+
+    // ── Progresso visual ──────────────────────────────────────────
+    function atualizarProgresso(passo) {
+        const larguras = { 1: '33.3%', 2: '66.6%', 3: '100%', 4: '100%' };
+        document.getElementById('progressFill').style.width = larguras[passo] || '33.3%';
+
+        [1, 2, 3].forEach(n => {
+            const node   = document.getElementById('node-' + n);
+            const bubble = document.getElementById('bubble-' + n);
+            node.classList.remove('active', 'done');
+            if (n < passo) {
+                node.classList.add('done');
+                bubble.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (n === passo) {
+                node.classList.add('active');
+                const icons = { 1: 'fa-envelope', 2: 'fa-key', 3: 'fa-lock' };
+                bubble.innerHTML = `<i class="fas ${icons[n]}"></i>`;
+            } else {
+                const icons = { 1: 'fa-envelope', 2: 'fa-key', 3: 'fa-lock' };
+                bubble.innerHTML = `<i class="fas ${icons[n]}"></i>`;
+            }
+        });
+    }
+
+    // ── Transição de passo ────────────────────────────────────────
+    function irParaPasso(novoPasso) {
+        const atual = document.getElementById('passo-' + (passoAtual === 4 ? 'sucesso' : passoAtual));
+        const proximo = document.getElementById('passo-' + (novoPasso === 4 ? 'sucesso' : novoPasso));
+
+        if (!atual || !proximo) return;
+
+        atual.classList.add('saindo');
+        setTimeout(() => {
+            atual.classList.remove('active', 'saindo');
+            proximo.classList.add('active');
+            passoAtual = novoPasso;
+            atualizarProgresso(novoPasso);
+        }, 300);
+    }
+
+    // ── Mostrar/ocultar alerta ────────────────────────────────────
+    function mostrarAlerta(id, textoId, msg, tipo) {
+        const el = document.getElementById(id);
+        if (textoId) document.getElementById(textoId).textContent = msg;
+        el.className = `alerta-inline ${tipo}`;
+        el.style.display = 'flex';
+    }
+
+    function ocultarAlerta(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    }
+
+    // ── Mascarar e-mail ───────────────────────────────────────────
+    function mascararEmail(email) {
+        const [user, domain] = email.split('@');
+        const visivel = user.substring(0, 3);
+        return `${visivel}${'*'.repeat(Math.max(2, user.length - 3))}@${domain}`;
+    }
+
+    // ── PASSO 1: Enviar código ────────────────────────────────────
+    function enviarCodigo() {
+        const email = document.getElementById('inputEmail').value.trim();
+        ocultarAlerta('alertaEmail');
+
+        if (!email || !email.includes('@') || !email.includes('.')) {
+            mostrarAlerta('alertaEmail', 'alertaEmailTexto', 'Por favor, insira um e-mail válido.', 'erro');
+            document.getElementById('wrapEmail').classList.add('invalid');
+            return;
+        }
+
+        emailDigitado = email;
+
+        // Gera código fictício (6 dígitos)
+        codigoGerado = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log('🔑 Código gerado (simulação):', codigoGerado);
+
+        // Feedback visual no botão
+        const btn = document.getElementById('btnEnviarCodigo');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            // Atualiza e-mail mascarado no passo 2
+            document.getElementById('emailMaskedTexto').textContent = mascararEmail(email);
+
+            irParaPasso(2);
+            iniciarTimerReenvio();
+
+            // Foca no primeiro campo OTP
+            setTimeout(() => document.querySelector('.otp-input')?.focus(), 400);
+        }, 1200);
+    }
+
+    // ── OTP: comportamento dos campos ────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        const otpInputs = document.querySelectorAll('.otp-input');
+
+        otpInputs.forEach((input, i) => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(-1);
+                if (this.value) {
+                    this.classList.add('preenchido');
+                    if (i < otpInputs.length - 1) otpInputs[i + 1].focus();
+                } else {
+                    this.classList.remove('preenchido');
+                }
+                // Verifica se todos preenchidos
+                const todos = [...otpInputs].every(inp => inp.value);
+                if (todos) {
+                    setTimeout(() => document.getElementById('btnValidarCodigo')?.focus(), 100);
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && i > 0) {
+                    otpInputs[i - 1].value = '';
+                    otpInputs[i - 1].classList.remove('preenchido');
+                    otpInputs[i - 1].focus();
+                }
+                // Permite colar
+                if (e.key === 'v' && (e.ctrlKey || e.metaKey)) return;
+            });
+
+            // Suporte a paste
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const texto = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+                [...texto.slice(0, 6)].forEach((char, idx) => {
+                    if (otpInputs[idx]) {
+                        otpInputs[idx].value = char;
+                        otpInputs[idx].classList.add('preenchido');
+                    }
+                });
+                const proxVazio = [...otpInputs].findIndex(inp => !inp.value);
+                (proxVazio === -1 ? otpInputs[5] : otpInputs[proxVazio]).focus();
+            });
+        });
+
+        // Validação em tempo real da senha
+        const novaSenhaInput = document.getElementById('novaSenha');
+        if (novaSenhaInput) {
+            novaSenhaInput.addEventListener('input', function() {
+                verificarForcaSenha(this.value);
+                verificarConfirmacao();
+            });
+            document.getElementById('confirmaSenha').addEventListener('input', verificarConfirmacao);
+        }
+
+        // Validação e-mail em tempo real
+        const emailInput = document.getElementById('inputEmail');
+        if (emailInput) {
+            emailInput.addEventListener('input', function() {
+                const wrap  = document.getElementById('wrapEmail');
+                const check = document.getElementById('emailCheck');
+                const valido = this.value.includes('@') && this.value.includes('.');
+                wrap.classList.toggle('valid',   valido);
+                wrap.classList.toggle('invalid', !!this.value && !valido);
+                check.style.display = valido ? 'block' : 'none';
+                if (valido) ocultarAlerta('alertaEmail');
+            });
+
+            emailInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') enviarCodigo();
+            });
+        }
+    });
+
+    // ── Timer de reenvio ──────────────────────────────────────────
+    function iniciarTimerReenvio() {
+        let segundos = 60;
+        const contador  = document.getElementById('contadorReenvio');
+        const linkEl    = document.getElementById('linkReenvio');
+        const timerEl   = document.getElementById('timerReenvio');
+
+        linkEl.classList.add('desabilitado');
+        timerEl.style.display = 'inline';
+
+        clearInterval(timerReenvio);
+        timerReenvio = setInterval(() => {
+            segundos--;
+            contador.textContent = segundos;
+            if (segundos <= 0) {
+                clearInterval(timerReenvio);
+                linkEl.classList.remove('desabilitado');
+                timerEl.style.display = 'none';
+            }
+        }, 1000);
+    }
+
+    function reenviarCodigo() {
+        codigoGerado = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log('🔑 Código reenviado (simulação):', codigoGerado);
+
+        // Limpa campos OTP
+        document.querySelectorAll('.otp-input').forEach(inp => {
+            inp.value = '';
+            inp.classList.remove('preenchido');
+        });
+        document.querySelector('.otp-input')?.focus();
+        ocultarAlerta('alertaCodigo');
+        iniciarTimerReenvio();
+    }
+
+    // ── PASSO 2: Validar código ───────────────────────────────────
+    function validarCodigo() {
+        const digitado = [...document.querySelectorAll('.otp-input')]
+            .map(i => i.value).join('');
+        ocultarAlerta('alertaCodigo');
+
+        if (digitado.length < 6) {
+            mostrarAlerta('alertaCodigo', 'alertaCodigoTexto', 'Preencha todos os 6 dígitos.', 'erro');
+            return;
+        }
+
+        const btn = document.getElementById('btnValidarCodigo');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            // Aceita qualquer código de 6 dígitos (simulação front-end)
+            // Em produção: validar com back-end
+            if (digitado.length === 6) {
+                clearInterval(timerReenvio);
+                irParaPasso(3);
+                setTimeout(() => document.getElementById('novaSenha')?.focus(), 400);
+            } else {
+                mostrarAlerta('alertaCodigo', 'alertaCodigoTexto', 'Código incorreto. Verifique e tente novamente.', 'erro');
+                document.querySelectorAll('.otp-input').forEach(inp => {
+                    inp.value = '';
+                    inp.classList.remove('preenchido');
+                });
+                document.querySelector('.otp-input')?.focus();
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Validar código';
+                btn.disabled = false;
+            }
+        }, 900);
+    }
+
+    // ── Força da senha ────────────────────────────────────────────
+    function verificarForcaSenha(senha) {
+        const forcaWrap = document.getElementById('forcaWrap');
+        forcaWrap.style.display = senha.length > 0 ? 'block' : 'none';
+
+        const checks = {
+            len:     senha.length >= 8,
+            upper:   /[A-Z]/.test(senha),
+            num:     /[0-9]/.test(senha),
+            special: /[^A-Za-z0-9]/.test(senha),
+        };
+
+        // Requisitos visuais
+        Object.entries(checks).forEach(([key, ok]) => {
+            const el = document.getElementById('req-' + key);
+            if (!el) return;
+            el.classList.toggle('ok', ok);
+            el.classList.toggle('fail', !ok);
+            el.querySelector('i').className = ok ? 'fas fa-check-circle' : 'fas fa-circle';
+        });
+
+        // Barras de força
+        const pontos = Object.values(checks).filter(Boolean).length;
+        const classes = ['', 'fraca', 'fraca', 'media', 'forte'];
+        const textos  = ['', 'Muito fraca', 'Fraca', 'Média — pode melhorar', 'Forte ✓'];
+        const cores   = ['', '#e53935', '#f3a000', '#f3a000', '#27ae60'];
+
+        [1,2,3,4].forEach(n => {
+            const barra = document.getElementById('b' + n);
+            barra.className = 'forca-barra' + (n <= pontos ? ' ' + classes[pontos] : '');
+        });
+
+        const textoEl = document.getElementById('forcaTexto');
+        textoEl.textContent = textos[pontos] || '';
+        textoEl.style.color = cores[pontos] || '#9aa5b8';
+    }
+
+    function verificarConfirmacao() {
+        const nova     = document.getElementById('novaSenha').value;
+        const confirma = document.getElementById('confirmaSenha').value;
+        const wrap     = document.getElementById('wrapConfirma');
+        if (!confirma) { wrap.classList.remove('valid', 'invalid'); return; }
+        wrap.classList.toggle('valid',   nova === confirma);
+        wrap.classList.toggle('invalid', nova !== confirma);
+    }
+
+    // ── Toggle ver senha ──────────────────────────────────────────
+    function toggleVer(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon  = document.getElementById(iconId);
+        if (!input || !icon) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.classList.toggle('fa-eye-slash');
+    }
+
+    // ── PASSO 3: Redefinir senha ──────────────────────────────────
+    function redefinirSenha() {
+        const nova     = document.getElementById('novaSenha').value;
+        const confirma = document.getElementById('confirmaSenha').value;
+        ocultarAlerta('alertaSenha');
+
+        if (nova.length < 8) {
+            mostrarAlerta('alertaSenha', 'alertaSenhaTexto', 'A senha deve ter no mínimo 8 caracteres.', 'erro');
+            return;
+        }
+        if (nova !== confirma) {
+            mostrarAlerta('alertaSenha', 'alertaSenhaTexto', 'As senhas não coincidem.', 'erro');
+            document.getElementById('wrapConfirma').classList.add('invalid');
+            return;
+        }
+
+        const btn = document.getElementById('btnRedefinir');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            // Em produção: enviar nova senha para o back-end
+            console.log('✅ Senha redefinida para o e-mail:', emailDigitado);
+
+            // Registra no localStorage que a senha foi alterada (simulação)
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+            if (usuario.email === emailDigitado) {
+                usuario.senhaAlterada = new Date().toISOString();
+                localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+            }
+
+            irParaPasso(4);
+        }, 1000);
+    }
+    </script>
+
+</body>
+</html>

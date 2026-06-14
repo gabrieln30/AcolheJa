@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcolheJá — Formulário de Acolhimento</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <style>
+    /* ── Leaflet: popup dark mode ── */
+    [data-theme="dark"] .leaflet-popup-content-wrapper {
+      background: #1a1d27 !important;
+      color: #e8ecf4 !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+      border: 1px solid #2d3148;
+    }
+    [data-theme="dark"] .leaflet-popup-tip { background: #1a1d27 !important; }
+    [data-theme="dark"] .leaflet-popup strong { color: #e8ecf4 !important; }
+    [data-theme="dark"] .leaflet-control-zoom a {
+      background: #1a1d27 !important;
+      color: #e8ecf4 !important;
+      border-color: #2d3148 !important;
+    }
+    [data-theme="dark"] .leaflet-control-attribution {
+      background: rgba(26,29,39,0.85) !important;
+      color: #8b95b0 !important;
+    }
+    [data-theme="dark"] .leaflet-control-attribution a { color: #7aa8f7 !important; }
+    .resource-item:hover .resource-icon { transform: scale(1.1); transition: transform .2s; }
+  </style>
+</head>
+
+<body class="form-page">
+
+  <header class="navbar">
+    <div class="logo-container">
+      <a href="index.html">
+        <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+      </a>
+    </div>
+    <nav class="menu-navegacao">
+      <a href="index.html">Home</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="ferramenta.html">Ferramenta</a>
+      <a href="contato.html">Contato</a>
+      <a href="telaForm.html" class="btn-form-nav">Acolha Já</a>
+      <a href="login.html" class="btn-login-nav">Login</a>
+    </nav>
+  </header>
+
+  <div class="form-bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <main class="form-main">
+
+    <div class="form-screen" id="screen-bloqueio">
+      <div class="intro-card" style="text-align:center; max-width:480px; margin:0 auto;">
+        <div class="intro-icon-wrap">
+          <div class="intro-icon-circle" style="background:linear-gradient(135deg,#fdecea,#fce4ec); color:#c62828;">
+            <i class="fas fa-lock"></i>
+          </div>
+        </div>
+        <span class="intro-eyebrow" style="color:#e83174;">Acesso restrito</span>
+        <h1 class="intro-title" style="font-size:2rem;">Login necessário</h1>
+        <p class="intro-desc">
+          Para enviar o formulário de acolhimento, você precisa estar conectado à sua conta.
+          Assim garantimos que seu histórico seja salvo e nossos voluntários possam acompanhar seu caso.
+        </p>
+        <ul class="intro-features" style="margin-bottom:32px;">
+          <li><i class="fas fa-shield-halved" style="color:#2b5da7;"></i> Seus dados ficam protegidos</li>
+          <li><i class="fas fa-history" style="color:#32bcad;"></i> Histórico salvo na sua conta</li>
+          <li><i class="fas fa-user-check" style="color:#f3824a;"></i> Voluntários podem acompanhar você</li>
+        </ul>
+        <div style="display:flex; flex-direction:column; gap:12px; max-width:300px; margin:0 auto;">
+          <a href="login.html?redirect=formulario" class="btn-start" style="text-decoration:none; justify-content:center;">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Fazer Login</span>
+          </a>
+          <a href="cadastro.html" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:13px 28px; border:2px solid #e0e6ed; border-radius:50px; font-size:0.95rem; font-weight:700; color:var(--dm-text, #1e2a3a); text-decoration:none; transition:all 0.25s ease; background:transparent;"
+             onmouseover="this.style.borderColor='#2b5da7'; this.style.color='#2b5da7';"
+             onmouseout="this.style.borderColor='#e0e6ed'; this.style.color='';">
+            <i class="fas fa-user-plus"></i> Criar conta grátis
+          </a>
+        </div>
+        <p style="margin-top:20px; font-size:0.82rem; color:var(--dm-text-muted, #9aa5b8);">
+          Já tem conta mas está tendo problemas?
+          <a href="senha.html" style="color:#f3824a; font-weight:700; text-decoration:none;">Redefinir senha</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="form-screen" id="screen-intro">
+      <div class="intro-card">
+        <div class="intro-icon-wrap">
+          <div class="intro-icon-circle">
+            <i class="fas fa-heart-pulse"></i>
+          </div>
+        </div>
+        <span class="intro-eyebrow">Formulário de Acolhimento</span>
+        <h1 class="intro-title" id="introTitulo">Estamos aqui<br>por você.</h1>
+        <p class="intro-desc">
+          Responda com calma, no seu ritmo. Não há respostas certas ou erradas —
+          só queremos entender como você está para conectar você às melhores formas de apoio.
+        </p>
+        <ul class="intro-features">
+          <li><i class="fas fa-lock"></i> Suas respostas são confidenciais</li>
+          <li><i class="fas fa-clock"></i> Leva cerca de 3 minutos</li>
+          <li><i class="fas fa-hands-helping"></i> Você pode parar a qualquer momento</li>
+        </ul>
+        <div id="tagUsuario" style="display:none; justify-content:center; margin-bottom:20px;">
+          <span style="display:inline-flex; align-items:center; gap:8px; background:#e8f7f0; border:1px solid #b2dfdb; padding:7px 18px; border-radius:50px; font-size:0.84rem; font-weight:700; color:#1b5e20;">
+            <i class="fas fa-circle-check" style="color:#27ae60;"></i>
+            <span id="tagUsuarioTexto">Logado como ...</span>
+          </span>
+        </div>
+        <button class="btn-start" id="btnStart" onclick="iniciarFormulario()">
+          <span>Começar</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-screen" id="screen-form">
+
+      <div class="form-header">
+        <div class="progress-meta">
+          <span class="progress-label" id="progressLabel">Pergunta 1 de 10</span>
+          <span class="progress-step-icon" id="progressIcon">💙</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+        </div>
+        <div class="step-dots" id="stepDots"></div>
+      </div>
+
+      <div class="questions-viewport" id="questionsViewport">
+        <div class="question-card" data-index="0">
+          <div class="q-category">
+            <i class="fas fa-heart"></i> Como você está
+          </div>
+          <h2 class="q-title">Como você está se sentindo <em>neste momento?</em></h2>
+          <p class="q-hint">Pode ser em palavras simples — "cansada", "perdido", "com medo"...</p>
+          <div class="answer-area">
+            <div class="emotion-chips" id="chips-1">
+              <button type="button" class="chip" data-value="Ansioso(a)">😰 Ansioso(a)</button>
+              <button type="button" class="chip" data-value="Triste">😢 Triste</button>
+              <button type="button" class="chip" data-value="Com medo">😨 Com medo</button>
+              <button type="button" class="chip" data-value="Confuso(a)">😕 Confuso(a)</button>
+              <button type="button" class="chip" data-value="Exausto(a)">😩 Exausto(a)</button>
+              <button type="button" class="chip" data-value="Com esperança">🌱 Com esperança</button>
+              <button type="button" class="chip" data-value="Sozinho(a)">🫙 Sozinho(a)</button>
+              <button type="button" class="chip" data-value="Outro">✏️ Outro</button>
+            </div>
+            <textarea id="p1" class="q-textarea" placeholder="Pode detalhar se quiser..."></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="1">
+          <div class="q-category">
+            <i class="fas fa-cloud-rain"></i> O que pesa
+          </div>
+          <h2 class="q-title">O que mais está te <em>incomodando</em> ou causando sofrimento agora?</h2>
+          <p class="q-hint">Pode ser uma situação, um pensamento, uma relação...</p>
+          <div class="answer-area">
+            <div class="emotion-chips" id="chips-2">
+              <button type="button" class="chip" data-value="Problemas no relacionamento">💔 Relacionamento</button>
+              <button type="button" class="chip" data-value="Situação financeira">💸 Financeiro</button>
+              <button type="button" class="chip" data-value="Saúde">🏥 Saúde</button>
+              <button type="button" class="chip" data-value="Trabalho / emprego">💼 Trabalho</button>
+              <button type="button" class="chip" data-value="Família">👨‍👩‍👧 Família</button>
+              <button type="button" class="chip" data-value="Solidão">🌑 Solidão</button>
+              <button type="button" class="chip" data-value="Outro">✏️ Outro</button>
+            </div>
+            <textarea id="p2" class="q-textarea" placeholder="Me conta um pouco mais, se quiser..."></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="2">
+          <div class="q-category">
+            <i class="fas fa-people-arrows"></i> Rede de apoio
+          </div>
+          <h2 class="q-title">Você tem <em>alguém</em> com quem possa conversar neste momento?</h2>
+          <p class="q-hint">Amigo, familiar, terapeuta — qualquer pessoa de confiança.</p>
+          <div class="answer-area">
+            <div class="radio-group" id="radio-3">
+              <label class="radio-card">
+                <input type="radio" name="q3" value="Sim, tenho alguém">
+                <div class="radio-content">
+                  <span class="radio-emoji">👥</span>
+                  <span class="radio-text">Sim, tenho alguém</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q3" value="Tenho, mas é difícil falar">
+                <div class="radio-content">
+                  <span class="radio-emoji">🤐</span>
+                  <span class="radio-text">Tenho, mas é difícil falar</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q3" value="Não tenho ninguém agora">
+                <div class="radio-content">
+                  <span class="radio-emoji">🫥</span>
+                  <span class="radio-text">Não tenho ninguém agora</span>
+                </div>
+              </label>
+            </div>
+            <textarea id="p3" class="q-textarea" placeholder="Quer adicionar algo?"></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="3">
+          <div class="q-category">
+            <i class="fas fa-ear-listen"></i> Ser ouvido
+          </div>
+          <h2 class="q-title">Você se sente <em>compreendido(a)</em> pelas pessoas ao seu redor?</h2>
+          <p class="q-hint">Não há resposta certa — só a sua verdade importa aqui.</p>
+          <div class="answer-area">
+            <div class="scale-group" id="scale-4">
+              <div class="scale-labels">
+                <span>Muito pouco</span>
+                <span>Completamente</span>
+              </div>
+              <div class="scale-track">
+                <button type="button" class="scale-btn" data-value="1">1</button>
+                <button type="button" class="scale-btn" data-value="2">2</button>
+                <button type="button" class="scale-btn" data-value="3">3</button>
+                <button type="button" class="scale-btn" data-value="4">4</button>
+                <button type="button" class="scale-btn" data-value="5">5</button>
+              </div>
+            </div>
+            <textarea id="p4" class="q-textarea" placeholder="Quer contar mais sobre isso?"></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="4">
+          <div class="q-category">
+            <i class="fas fa-shield-halved"></i> Segurança
+          </div>
+          <h2 class="q-title">Você se sente <em>seguro(a)</em> neste momento?</h2>
+          <p class="q-hint">Segurança física, emocional, em casa — qualquer sentido que faça sentido pra você.</p>
+          <div class="answer-area">
+            <div class="radio-group" id="radio-5">
+              <label class="radio-card">
+                <input type="radio" name="q5" value="Sim, me sinto seguro(a)">
+                <div class="radio-content">
+                  <span class="radio-emoji">🛡️</span>
+                  <span class="radio-text">Sim, me sinto seguro(a)</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q5" value="Mais ou menos">
+                <div class="radio-content">
+                  <span class="radio-emoji">⚖️</span>
+                  <span class="radio-text">Mais ou menos</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q5" value="Não, não me sinto seguro(a)">
+                <div class="radio-content">
+                  <span class="radio-emoji">⚠️</span>
+                  <span class="radio-text">Não, não me sinto seguro(a)</span>
+                </div>
+              </label>
+            </div>
+            <textarea id="p5" class="q-textarea" placeholder="Pode detalhar, se quiser..."></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="5">
+          <div class="q-category">
+            <i class="fas fa-bolt"></i> Momento difícil
+          </div>
+          <h2 class="q-title">Passou por alguma situação recente que te <em>abalou muito?</em></h2>
+          <p class="q-hint">Perda, separação, crise, acidente... só compartilhe o que se sentir confortável.</p>
+          <div class="answer-area">
+            <div class="radio-group" id="radio-6">
+              <label class="radio-card">
+                <input type="radio" name="q6" value="Sim, passei por algo difícil">
+                <div class="radio-content">
+                  <span class="radio-emoji">🌧️</span>
+                  <span class="radio-text">Sim, passei por algo difícil</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q6" value="Foi difícil, mas estou lidando">
+                <div class="radio-content">
+                  <span class="radio-emoji">🌥️</span>
+                  <span class="radio-text">Foi difícil, mas estou lidando</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q6" value="Nada muito grave recentemente">
+                <div class="radio-content">
+                  <span class="radio-emoji">☀️</span>
+                  <span class="radio-text">Nada muito grave recentemente</span>
+                </div>
+              </label>
+            </div>
+            <textarea id="p6" class="q-textarea" placeholder="Quer contar o que aconteceu?"></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="6">
+          <div class="q-category">
+            <i class="fas fa-wallet"></i> Situação prática
+          </div>
+          <h2 class="q-title">Está enfrentando alguma dificuldade <em>financeira ou profissional?</em></h2>
+          <p class="q-hint">Muitas vezes o estresse prático amplifica tudo — e temos recursos para isso também.</p>
+          <div class="answer-area">
+            <div class="radio-group" id="radio-7">
+              <label class="radio-card">
+                <input type="radio" name="q7" value="Sim, está muito difícil">
+                <div class="radio-content">
+                  <span class="radio-emoji">📉</span>
+                  <span class="radio-text">Sim, está muito difícil</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q7" value="Tenho algumas preocupações">
+                <div class="radio-content">
+                  <span class="radio-emoji">📊</span>
+                  <span class="radio-text">Tenho algumas preocupações</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q7" value="Não, estou estável">
+                <div class="radio-content">
+                  <span class="radio-emoji">✅</span>
+                  <span class="radio-text">Não, estou estável</span>
+                </div>
+              </label>
+            </div>
+            <textarea id="p7" class="q-textarea" placeholder="Pode detalhar se quiser..."></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="7">
+          <div class="q-category">
+            <i class="fas fa-hands-holding-heart"></i> Apoio prático
+          </div>
+          <h2 class="q-title">Você gostaria de receber <em>ajuda prática</em> — orientações, serviços ou apoio?</h2>
+          <p class="q-hint">Podemos indicar serviços gratuitos, voluntários e organizações próximas de você.</p>
+          <div class="answer-area">
+            <div class="radio-group" id="radio-8">
+              <label class="radio-card">
+                <input type="radio" name="q8" value="Sim, gostaria muito">
+                <div class="radio-content">
+                  <span class="radio-emoji">🙏</span>
+                  <span class="radio-text">Sim, gostaria muito</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q8" value="Talvez, quero entender melhor">
+                <div class="radio-content">
+                  <span class="radio-emoji">🤔</span>
+                  <span class="radio-text">Talvez, quero entender melhor</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q8" value="Por enquanto não, só quero ser ouvido(a)">
+                <div class="radio-content">
+                  <span class="radio-emoji">💬</span>
+                  <span class="radio-text">Por enquanto não, só quero ser ouvido(a)</span>
+                </div>
+              </label>
+            </div>
+            <textarea id="p8" class="q-textarea" placeholder="Que tipo de ajuda seria mais útil?"></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="8">
+          <div class="q-category">
+            <i class="fas fa-map-marker-alt"></i> Sua região
+          </div>
+          <h2 class="q-title">Em qual <em>região do RJ</em> você está?</h2>
+          <p class="q-hint">Isso nos ajuda a indicar instituições e serviços de apoio próximos a você.</p>
+          <div class="answer-area">
+            <div class="radio-group region-group" id="radio-9">
+              <label class="radio-card region-card">
+                <input type="radio" name="q9" value="RJ">
+                <div class="radio-content">
+                  <span class="radio-emoji">🏙️</span>
+                  <span class="radio-text">Rio de Janeiro (Capital)</span>
+                  <span class="radio-sub">Zona Sul, Norte, Oeste, Centro</span>
+                </div>
+              </label>
+              <label class="radio-card region-card">
+                <input type="radio" name="q9" value="Grande Niterói">
+                <div class="radio-content">
+                  <span class="radio-emoji">🌉</span>
+                  <span class="radio-text">Grande Niterói</span>
+                  <span class="radio-sub">Niterói, São Gonçalo e região</span>
+                </div>
+              </label>
+              <label class="radio-card region-card">
+                <input type="radio" name="q9" value="baixada">
+                <div class="radio-content">
+                  <span class="radio-emoji">🏘️</span>
+                  <span class="radio-text">Baixada Fluminense</span>
+                  <span class="radio-sub">Nova Iguaçu, Duque de Caxias e região</span>
+                </div>
+              </label>
+            </div>
+            <textarea id="p9" class="q-textarea" placeholder="Pode nos dizer o bairro ou município se quiser..."></textarea>
+          </div>
+        </div>
+
+        <div class="question-card" data-index="9">
+          <div class="q-category">
+            <i class="fas fa-phone-volume"></i> Próximos passos
+          </div>
+          <h2 class="q-title">Você gostaria que alguém <em>entrasse em contato</em> com você?</h2>
+          <p class="q-hint">Se sim, nossos voluntários podem entrar em contato por telefone, WhatsApp ou e-mail.</p>
+          <div class="answer-area">
+            <div class="radio-group" id="radio-10">
+              <label class="radio-card">
+                <input type="radio" name="q10" value="Sim, pode entrar em contato">
+                <div class="radio-content">
+                  <span class="radio-emoji">📲</span>
+                  <span class="radio-text">Sim, por favor</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="q10" value="Prefiro não por enquanto">
+                <div class="radio-content">
+                  <span class="radio-emoji">🔇</span>
+                  <span class="radio-text">Prefiro não, por enquanto</span>
+                </div>
+              </label>
+            </div>
+            <div class="contact-fields" id="contactFields">
+              <div class="contact-input-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" id="nomeContato" class="contact-input" placeholder="Seu nome (opcional)">
+              </div>
+              <div class="contact-input-wrap">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="telContato" class="contact-input" placeholder="WhatsApp ou telefone (opcional)">
+              </div>
+              <div class="contact-input-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="emailContato" class="contact-input" placeholder="E-mail (opcional)">
+              </div>
+            </div>
+            <textarea id="p10" class="q-textarea" placeholder="Alguma observação para quem entrar em contato?"></textarea>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="form-nav">
+        <button class="btn-nav btn-prev" id="btnPrev" onclick="perguntaAnterior()" aria-label="Pergunta anterior">
+          <i class="fas fa-arrow-left"></i>
+          <span>Anterior</span>
+        </button>
+        <span class="nav-counter" id="navCounter">1 / 10</span>
+        <button class="btn-nav btn-next" id="btnNext" onclick="proximaPergunta()">
+          <span>Continuar</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+    
+    <div class="form-screen" id="screen-result">
+      <div class="result-card" id="resultCard">
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-logo-info">
+        <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+        <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+      </div>
+      <div class="footer-links">
+        <h3>Navegação</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="sobre.html">Sobre nós</a></li>
+          <li><a href="ferramenta.html">Ferramentas</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-social">
+        <h3>Redes Sociais</h3>
+        <div class="social-icons">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="javaScript.js" defer></script>
+  <script>
+  /* =================================================================
+     FORMULÁRIO DE ACOLHIMENTO — lógica completa com mapa funcional
+  ================================================================= */
+
+  (function() {
+    const t = localStorage.getItem('acolheja_tema') || 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+
+  (function verificarAcessoFormulario() {
+    const sessaoNova = localStorage.getItem('acolheja_sessao');
+    const usuarioLegado = localStorage.getItem('usuarioLogado');
+    const empresaLegado = localStorage.getItem('empresaLogada');
+    
+    const logado = sessaoNova || usuarioLegado || empresaLegado;
+
+    if (logado) {
+      document.getElementById('screen-intro').classList.add('active');
+      try {
+        const dados = JSON.parse(logado);
+        const nome  = dados.nome || dados.email || dados.cnpj || 'você';
+        const primeiroNome = nome.split(/[@\s]/)[0];
+
+        document.getElementById('introTitulo').innerHTML = `Olá, <em>${primeiroNome}</em>.<br>Estamos aqui por você.`;
+
+        const tag = document.getElementById('tagUsuario');
+        document.getElementById('tagUsuarioTexto').textContent = `Logado como ${nome}`;
+        tag.style.display = 'flex';
+      } catch(e) { }
+    } else {
+      document.getElementById('screen-bloqueio').classList.add('active');
+    }
+
+    const redirecionarPosLogin = sessionStorage.getItem('acolheja_redirect_pos_login');
+    if (redirecionarPosLogin === 'telaForm.html' && logado) {
+      sessionStorage.removeItem('acolheja_redirect_pos_login');
+    }
+  })();
+
+  let perguntaAtual = 0;
+  const TOTAL = 10;
+  const progressIcons = ['💙','💭','🤝','👂','🛡️','🌧️','💼','🙏','📍','📲'];
+  const progressColors = [
+    '#4a7fd4', '#7b68ee', '#32bcad', '#5b9bd5',
+    '#2b5da7', '#6c757d', '#f39c12', '#e83174', '#27ae60', '#f3824a'
+  ];
+
+  function iniciarFormulario() {
+    mudarTela('screen-intro', 'screen-form');
+    perguntaAtual = 0;
+    renderizarDots();
+    atualizarVista();
+  }
+
+  function mudarTela(de, para) {
+    const elDe = document.getElementById(de);
+    const elPara = document.getElementById(para);
+    elDe.classList.add('sair');
+    setTimeout(() => {
+      elDe.classList.remove('active', 'sair');
+      elPara.classList.add('active');
+    }, 380);
+  }
+
+  function proximaPergunta() {
+    if (perguntaAtual < TOTAL - 1) {
+      animarTransicao('next', () => {
+        perguntaAtual++;
+        atualizarVista();
+      });
+    } else {
+      enviarFormulario();
+    }
+  }
+
+  function perguntaAnterior() {
+    if (perguntaAtual > 0) {
+      animarTransicao('prev', () => {
+        perguntaAtual--;
+        atualizarVista();
+      });
+    }
+  }
+
+  function animarTransicao(direcao, callback) {
+    const cards = document.querySelectorAll('.question-card');
+    const atual = cards[perguntaAtual];
+    if (!atual) return;
+    atual.classList.add(direcao === 'next' ? 'slide-out-left' : 'slide-out-right');
+    setTimeout(() => {
+      atual.classList.remove('slide-out-left', 'slide-out-right');
+      callback();
+    }, 320);
+  }
+
+  function atualizarVista() {
+    const cards = document.querySelectorAll('.question-card');
+    cards.forEach((card, i) => {
+      card.classList.remove('active', 'slide-in-right', 'slide-in-left');
+      if (i === perguntaAtual) card.classList.add('active', 'slide-in-right');
+    });
+
+    const pct = ((perguntaAtual + 1) / TOTAL) * 100;
+    const fill = document.getElementById('progressFill');
+    fill.style.width = pct + '%';
+    fill.style.background = `linear-gradient(90deg, ${progressColors[perguntaAtual]}, ${progressColors[Math.min(perguntaAtual + 1, TOTAL - 1)]})`;
+
+    document.getElementById('progressLabel').textContent = `Pergunta ${perguntaAtual + 1} de ${TOTAL}`;
+    document.getElementById('progressIcon').textContent  = progressIcons[perguntaAtual];
+    document.getElementById('navCounter').textContent    = `${perguntaAtual + 1} / ${TOTAL}`;
+
+    renderizarDots();
+
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    btnPrev.style.visibility = perguntaAtual === 0 ? 'hidden' : 'visible';
+
+    if (perguntaAtual === TOTAL - 1) {
+      btnNext.innerHTML = '<span>Enviar</span><i class="fas fa-paper-plane"></i>';
+      btnNext.classList.add('btn-enviar');
+    } else {
+      btnNext.innerHTML = '<span>Continuar</span><i class="fas fa-arrow-right"></i>';
+      btnNext.classList.remove('btn-enviar');
+    }
+
+    const viewport = document.getElementById('questionsViewport');
+    if (viewport) viewport.scrollTop = 0;
+
+    gerenciarCamposContato();
+  }
+
+  function renderizarDots() {
+    const container = document.getElementById('stepDots');
+    container.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'step-dot' + (i === perguntaAtual ? ' active' : '') + (i < perguntaAtual ? ' done' : '');
+      if (i < perguntaAtual) dot.innerHTML = '<i class="fas fa-check"></i>';
+      dot.addEventListener('click', () => {
+        const dir = i > perguntaAtual ? 'next' : 'prev';
+        animarTransicao(dir, () => { perguntaAtual = i; atualizarVista(); });
+      });
+      container.appendChild(dot);
+    }
+  }
+
+  // ── Inserção no Textarea ──────────────────────────────
+  document.querySelectorAll('.emotion-chips').forEach(chips => {
+    chips.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', function() {
+        const irmao = this.closest('.emotion-chips');
+        irmao.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+
+        const area = irmao.closest('.answer-area').querySelector('.q-textarea');
+        if (area) {
+            const prefixoAntigo = irmao.dataset.prefixoAtual || '';
+            const novoPrefixo = this.dataset.value + " - ";
+            if (prefixoAntigo && area.value.startsWith(prefixoAntigo)) {
+                area.value = area.value.replace(prefixoAntigo, novoPrefixo);
+            } else if (area.value === '') {
+                area.value = novoPrefixo;
+            } else {
+                area.value = novoPrefixo + area.value;
+            }
+            irmao.dataset.prefixoAtual = novoPrefixo;
+            area.focus(); 
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll('.radio-card input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const grupo = this.closest('.radio-group');
+      grupo.querySelectorAll('.radio-card').forEach(rc => rc.classList.remove('selected'));
+      this.closest('.radio-card').classList.add('selected');
+
+      const area = grupo.closest('.answer-area').querySelector('.q-textarea');
+      if (area) {
+          const prefixoAntigo = grupo.dataset.prefixoAtual || '';
+          const textoOpcao = this.closest('.radio-card').querySelector('.radio-text').innerText;
+          const novoPrefixo = textoOpcao + " - ";
+          if (prefixoAntigo && area.value.startsWith(prefixoAntigo)) {
+              area.value = area.value.replace(prefixoAntigo, novoPrefixo);
+          } else if (area.value === '') {
+              area.value = novoPrefixo;
+          } else {
+              area.value = novoPrefixo + area.value;
+          }
+          grupo.dataset.prefixoAtual = novoPrefixo;
+          area.focus();
+      }
+    });
+  });
+
+  document.querySelectorAll('.scale-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const pista = this.closest('.scale-track');
+      pista.querySelectorAll('.scale-btn').forEach((b, i) => {
+        b.classList.toggle('filled', i <= Array.from(pista.children).indexOf(this));
+        b.classList.toggle('active', b === this);
+      });
+
+      const area = pista.closest('.answer-area').querySelector('.q-textarea');
+      if (area) {
+          const prefixoAntigo = pista.dataset.prefixoAtual || '';
+          const novoPrefixo = "Nível " + this.dataset.value + " - ";
+          if (prefixoAntigo && area.value.startsWith(prefixoAntigo)) {
+              area.value = area.value.replace(prefixoAntigo, novoPrefixo);
+          } else if (area.value === '') {
+              area.value = novoPrefixo;
+          } else {
+              area.value = novoPrefixo + area.value;
+          }
+          pista.dataset.prefixoAtual = novoPrefixo;
+          area.focus();
+      }
+    });
+  });
+
+  function gerenciarCamposContato() {
+    const radios = document.querySelectorAll('input[name="q10"]');
+    const fields = document.getElementById('contactFields');
+    if (!fields) return;
+
+    radios.forEach(r => {
+      r.addEventListener('change', function() {
+        fields.style.display = this.value === 'Sim, pode entrar em contato' ? 'flex' : 'none';
+      });
+    });
+    const checked = document.querySelector('input[name="q10"]:checked');
+    fields.style.display = checked && checked.value === 'Sim, pode entrar em contato' ? 'flex' : 'none';
+  }
+
+  function coletarRespostas() {
+    const respostas = {};
+    ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) respostas[id] = el.value.trim();
+    });
+    ['q3','q5','q6','q7','q8','q10'].forEach(name => {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      if (checked) respostas[name] = checked.value;
+    });
+    const activeScale = document.querySelector('.scale-btn.active');
+    if (activeScale) respostas['q4_escala'] = activeScale.dataset.value;
+    const regRad = document.querySelector('input[name="q9"]:checked');
+    if (regRad) respostas['regiao'] = regRad.value;
+    const chips = document.querySelectorAll('.chip.selected');
+    respostas['chips'] = Array.from(chips).map(c => c.dataset.value);
+    respostas['nomeContato']  = (document.getElementById('nomeContato')?.value || '').trim();
+    respostas['telContato']   = (document.getElementById('telContato')?.value || '').trim();
+    respostas['emailContato'] = (document.getElementById('emailContato')?.value || '').trim();
+
+    return respostas;
+  }
+
+  function calcularNivel(resp) {
+    let score = 0;
+    if (resp.q5 === 'Não, não me sinto seguro(a)') score += 3;
+    if (resp.q3 === 'Não tenho ninguém agora') score += 2;
+    if (resp.q6 === 'Sim, passei por algo difícil') score += 2;
+    if (resp.q7 === 'Sim, está muito difícil') score += 1;
+    if (resp.q4_escala && parseInt(resp.q4_escala) <= 2) score += 1;
+    return score;
+  }
+
+  function enviarFormulario() {
+    const usuarioAtual = localStorage.getItem('usuarioLogado') || localStorage.getItem('empresaLogada');
+    if (!usuarioAtual) {
+      mudarTela('screen-form', 'screen-bloqueio');
+      return;
+    }
+
+    const resp = coletarRespostas();
+    try {
+      const dados = JSON.parse(usuarioAtual);
+      resp.usuarioEmail = dados.email || dados.cnpj || 'anônimo';
+    } catch(e) {}
+
+    const nivel = calcularNivel(resp);
+
+    localStorage.setItem('acolheja_ultima_resposta', JSON.stringify({
+      ...resp,
+      data: new Date().toLocaleString('pt-BR')
+    }));
+
+    // IMPORTANTE: Limpa o mapa se o usuário reenviar o formulário sem recarregar a página
+    if (window._mapaLeaflet != undefined && window._mapaLeaflet !== null) {
+        window._mapaLeaflet.remove();
+        window._mapaLeaflet = null;
+    }
+
+    gerarResultado(resp, nivel);
+    mudarTela('screen-form', 'screen-result');
+  }
+
+  function gerarResultado(resp, nivel) {
+    const card   = document.getElementById('resultCard');
+    const regiao = resp.regiao || 'RJ';
+
+    const pontos = {
+      'RJ': {
+        centro: [-22.9068, -43.1729],
+        zoom: 11,
+        locais: [
+          { nome: 'CVV Rio de Janeiro',         tipo: 'Apoio emocional',    tel: '188',             lat: -22.9056, lng: -43.1761, icon: 'phone',               cor: '#e83174' },
+          { nome: 'CAPS Adulto – Botafogo',     tipo: 'Saúde mental',       tel: '(21) 3938-4000',  lat: -22.9538, lng: -43.1814, icon: 'hospital',            cor: '#2b5da7' },
+          { nome: 'CAPS Adulto – Tijuca',       tipo: 'Saúde mental',       tel: '(21) 3938-4001',  lat: -22.9226, lng: -43.2369, icon: 'hospital',            cor: '#2b5da7' },
+          { nome: 'CRAS Zona Sul',              tipo: 'Assistência social', tel: '(21) 3971-2000',  lat: -22.9840, lng: -43.2110, icon: 'hospital', cor: '#32bcad' },
+          { nome: 'CRAS Zona Norte',            tipo: 'Assistência social', tel: '(21) 3971-2001',  lat: -22.8700, lng: -43.2800, icon: 'handshake', cor: '#32bcad' },
+          { nome: 'CRAS Zona Oeste',            tipo: 'Assistência social', tel: '(21) 3971-2002',  lat: -22.9400, lng: -43.4700, icon: 'handshake', cor: '#32bcad' },
+          { nome: 'UPA 24h – Rocha Miranda',   tipo: 'Saúde',              tel: '(21) 3111-2800',  lat: -22.8529, lng: -43.3374, icon: 'kit-medical',         cor: '#f3824a' },
+          { nome: 'Centro de Referência da Mulher – Lapa', tipo: 'Apoio à mulher', tel: '(21) 3814-4950', lat: -22.9094, lng: -43.1817, icon: 'person-dress',      cor: '#7b68ee' },
+        ]
+      },
+      'Grande Niterói': {
+        centro: [-22.8830, -43.1040],
+        zoom: 12,
+        locais: [
+          { nome: 'CVV Niterói',                tipo: 'Apoio emocional',    tel: '188',             lat: -22.8830, lng: -43.1070, icon: 'phone',               cor: '#e83174' },
+          { nome: 'CAPS Niterói – Centro',      tipo: 'Saúde mental',       tel: '(21) 2613-8490',  lat: -22.8969, lng: -43.1274, icon: 'hospital',            cor: '#2b5da7' },
+          { nome: 'CRAS Niterói – Centro',      tipo: 'Assistência social', tel: '(21) 2717-6810',  lat: -22.8910, lng: -43.1189, icon: 'handshake', cor: '#32bcad' },
+          { nome: 'CAPS São Gonçalo',           tipo: 'Saúde mental',       tel: '(21) 2601-8312',  lat: -22.8269, lng: -43.0540, icon: 'hospital',            cor: '#2b5da7' },
+          { nome: 'CRAS São Gonçalo – Alcântara', tipo: 'Assistência social', tel: '(21) 2601-4050', lat: -22.8440, lng: -43.0520, icon: 'handshake', cor: '#32bcad' },
+          { nome: 'UPA 24h – Niterói',         tipo: 'Saúde',              tel: '(21) 2717-6500',  lat: -22.8750, lng: -43.1050, icon: 'kit-medical',         cor: '#f3824a' },
+        ]
+      },
+      'baixada': {
+        centro: [-22.7560, -43.4610],
+        zoom: 11,
+        locais: [
+          { nome: 'CVV Duque de Caxias',        tipo: 'Apoio emocional',    tel: '188',             lat: -22.7760, lng: -43.3110, icon: 'phone',               cor: '#e83174' },
+          { nome: 'CAPS Nova Iguaçu',           tipo: 'Saúde mental',       tel: '(21) 2667-1600',  lat: -22.7570, lng: -43.4610, icon: 'hospital',            cor: '#2b5da7' },
+          { nome: 'CRAS Nova Iguaçu – Centro',  tipo: 'Assistência social', tel: '(21) 2667-1400',  lat: -22.7530, lng: -43.4530, icon: 'handshake', cor: '#32bcad' },
+          { nome: 'CAPS Duque de Caxias',       tipo: 'Saúde mental',       tel: '(21) 2773-2000',  lat: -22.7870, lng: -43.3110, icon: 'hospital',            cor: '#2b5da7' },
+          { nome: 'CRAS Duque de Caxias',       tipo: 'Assistência social', tel: '(21) 2773-6800',  lat: -22.7860, lng: -43.3180, icon: 'handshake', cor: '#32bcad' },
+          { nome: 'UPA 24h – Baixada',         tipo: 'Saúde',              tel: '(21) 3446-1000',  lat: -22.7450, lng: -43.4700, icon: 'kit-medical',         cor: '#f3824a' },
+        ]
+      }
+    };
+
+    const regData = pontos[regiao] || pontos['RJ'];
+
+    const recursosHTML = regData.locais.map(r => `
+      <div class="resource-item" style="cursor:pointer;" onclick="focusPin(${r.lat},${r.lng},'${r.nome.replace(/'/g,"\\'")}')">
+        <div class="resource-icon" style="background:${r.cor}22; color:${r.cor};">
+          <i class="fas fa-${r.icon}"></i>
+        </div>
+        <div class="resource-info">
+          <span class="resource-tipo">${r.tipo}</span>
+          <strong class="resource-nome">${r.nome}</strong>
+          <span class="resource-contato"><i class="fas fa-phone" style="font-size:.7rem; margin-right:4px;"></i>${r.tel}</span>
+        </div>
+        <i class="fas fa-location-crosshairs" style="color:#b0b8c8; font-size:.85rem; flex-shrink:0;" title="Ver no mapa"></i>
+      </div>
+    `).join('');
+
+    let urgenciaHTML = '';
+    if (nivel >= 4) {
+      urgenciaHTML = `
+        <div class="result-alert">
+          <i class="fas fa-heart-pulse"></i>
+          <div>
+            <strong>Você não está sozinho(a).</strong>
+            Com base nas suas respostas, parece que você pode estar passando por um momento bem difícil.
+            Nossos voluntários foram notificados e entrarão em contato em breve. Se precisar falar agora,
+            ligue <strong>188</strong> (CVV, gratuito, 24h).
+          </div>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="result-hero">
+        <div class="result-check-circle"><i class="fas fa-check"></i></div>
+        <h2 class="result-title">Recebemos suas respostas.</h2>
+        <p class="result-subtitle">
+          Obrigado por confiar em nós. Cada palavra que você compartilhou importa,
+          e já estamos trabalhando para te conectar ao apoio certo.
+        </p>
+      </div>
+
+      ${urgenciaHTML}
+
+      <div class="result-section">
+        <h3><i class="fas fa-map-pin"></i> Pontos de apoio próximos a você</h3>
+        <p style="font-size:.84rem; color:var(--f-muted,#6b7a99); margin-bottom:14px;">
+          Clique em qualquer local para destacá-lo no mapa.
+        </p>
+        <div class="resources-list">${recursosHTML}</div>
+      </div>
+
+      <div class="result-section" style="padding:0; overflow:hidden;">
+        <div style="padding:18px 22px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+          <h3 style="margin:0;"><i class="fas fa-map"></i> Mapa interativo</h3>
+          <span style="font-size:.78rem; color:var(--f-muted,#6b7a99);">
+            <i class="fas fa-hand-pointer"></i> Clique nos pins para ver detalhes
+          </span>
+        </div>
+        <div id="mapaAjuda" style="width:100%; height:380px; border-radius:0 0 12px 12px; z-index: 1;"></div>
+      </div>
+
+      <div class="result-section">
+        <h3><i class="fas fa-heart"></i> Próximos passos</h3>
+        <ol class="next-steps">
+          <li><span class="step-num">1</span><span>Salve o número <strong>188 (CVV)</strong> — disponível 24h, é gratuito e sigiloso.</span></li>
+          <li><span class="step-num">2</span><span>Se autorizou contato, aguarde nosso voluntário em até <strong>48 horas</strong>.</span></li>
+          <li><span class="step-num">3</span><span>Acesse a aba <a href="ferramenta.html">Ferramentas</a> para mais recursos de acolhimento.</span></li>
+        </ol>
+      </div>
+
+      <div class="result-actions">
+        <a href="index.html" class="btn-result-secondary">
+          <i class="fas fa-home"></i> Voltar ao início
+        </a>
+        <button class="btn-result-primary" onclick="window.print()">
+          <i class="fas fa-download"></i> Salvar resultado
+        </button>
+      </div>
+    `;
+
+    // Atraso de 600ms garante que a transição CSS terminou
+    setTimeout(() => inicializarMapa(regData), 600);
+  }
+
+  window._mapaLeaflet = null;
+
+  function inicializarMapa(regData) {
+    if (!window.L) {
+      console.error("A biblioteca do mapa (Leaflet) não foi carregada. Verifique a conexão.");
+      document.getElementById('mapaAjuda').innerHTML = '<p style="padding: 20px; text-align: center; color: #e53935;">Erro ao carregar o mapa. Verifique sua conexão com a internet.</p>';
+      return;
+    }
+
+    const mapContainer = document.getElementById('mapaAjuda');
+    if (!mapContainer) return;
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const tileUrl = isDark
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+    window._mapaLeaflet = L.map('mapaAjuda', {
+      center:       regData.centro,
+      zoom:         regData.zoom,
+      scrollWheelZoom: true,
+      zoomControl:  true,
+    });
+
+    L.tileLayer(tileUrl, {
+      attribution: '© OpenStreetMap © CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(window._mapaLeaflet);
+
+    function criarIcone(cor) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 42" width="32" height="42">
+        <path d="M16 0C7.163 0 0 7.163 0 16c0 10 16 26 16 26S32 26 32 16C32 7.163 24.837 0 16 0z" fill="${cor}" stroke="white" stroke-width="2"/>
+        <circle cx="16" cy="16" r="7" fill="white" opacity="0.9"/>
+      </svg>`;
+      return L.divIcon({
+        html: svg,
+        className: '',
+        iconSize:   [32, 42],
+        iconAnchor: [16, 42],
+        popupAnchor:[0, -44]
+      });
+    }
+
+    regData.locais.forEach(local => {
+      const marker = L.marker([local.lat, local.lng], { icon: criarIcone(local.cor) });
+      
+      marker.bindPopup(`
+        <div style="font-family:'Segoe UI',sans-serif; min-width:190px; padding:4px 2px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="width:28px;height:28px;background:${local.cor}22;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <span style="color:${local.cor}; font-size:.85rem;">📍</span>
+            </span>
+            <span style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:${local.cor};">${local.tipo}</span>
+          </div>
+          <strong style="display:block; font-size:.95rem; color:var(--dm-text, #1e2a3a); margin-bottom:4px; line-height:1.3;">${local.nome}</strong>
+          <a href="tel:${local.tel.replace(/\D/g,'')}" style="display:inline-flex;align-items:center;gap:5px;color:#2b5da7;font-size:.85rem;font-weight:700;text-decoration:none;">
+            📞 ${local.tel}
+          </a>
+          <div style="margin-top:8px;">
+            <a href="https://www.google.com/maps/search/?api=1&query=${local.lat},${local.lng}" target="_blank"
+               style="display:inline-flex;align-items:center;gap:5px;font-size:.78rem;color:#f3824a;font-weight:700;text-decoration:none;">
+              🗺️ Ver no Google Maps
+            </a>
+          </div>
+        </div>
+      `, { maxWidth: 240 });
+
+      local._marker = marker;
+      marker.addTo(window._mapaLeaflet);
+    });
+
+    window.focusPin = function(lat, lng, nome) {
+      if(!window._mapaLeaflet) return;
+      window._mapaLeaflet.flyTo([lat, lng], 15, { animate: true, duration: 0.9 });
+      const local = regData.locais.find(l => l.lat === lat && l.lng === lng);
+      if (local && local._marker) local._marker.openPopup();
+      document.getElementById('mapaAjuda')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    setTimeout(() => {
+        if(window._mapaLeaflet) window._mapaLeaflet.invalidateSize();
+    }, 500);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    const screen = document.getElementById('screen-form');
+    if (!screen.classList.contains('active')) return;
+    if (e.key === 'Enter' && !e.shiftKey && document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      proximaPergunta();
+    }
+  });
+  </script>
+</body>
+</html>

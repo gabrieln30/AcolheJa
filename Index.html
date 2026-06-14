@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>AcolheJá - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="javaScript.js" defer></script>
+</head>
+<body class="home-page">
+
+    <header class="navbar" id="mainNavbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" id="navLogo" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        
+        <i class="fas fa-bars menu-toggle" id="mobileMenuBtn" style="display: none; color: white; cursor: pointer; font-size: 1.5rem;"></i>
+
+        <nav class="menu-navegacao" id="navMenu">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="ferramenta.html">Ferramenta</a>
+            <a href="contato.html">Contato</a>
+            <a href="doacao.html">Doações</a>
+            
+            <div class="search-box">
+                <input type="search" placeholder="Pesquisar..." class="search-input" id="searchInput">
+                <i class="fas fa-search" style="cursor: pointer;"></i>
+            </div>
+            
+            <a href="login.html" class="btn-login-nav">Login</a>
+        </nav>
+    </header>
+
+    <main class="hero-container">
+        <section class="hero-text">
+            <span class="badge-slogan">Acolhendo com empatia</span>
+            <h1 class="hero-title">AcolheJá</h1>
+            <p class="hero-description">
+                Uma plataforma criada para oferecer suporte a pessoas em situação de fragilidade emocional, financeira ou psicológica. 
+                Garantimos um atendimento acolhedor, eliminando burocracias.
+            </p>
+            <a href="telaForm.html" class="btn-cta">Acolha Já</a>
+        </section>
+
+        <section class="hero-visual-grid">
+            <div class="grid-top">
+                <div class="grid-item"><img src="imagens/imagem2.png" alt="Suporte"></div>
+                <div class="grid-item"><img src="imagens/imagem3.jpg" alt="União"></div>
+            </div>
+            <div class="grid-bottom">
+                <div class="carrossel-placeholder" id="mainCarrossel">
+                    <img src="imagens/abraco1.png" alt="Carrossel Principal" id="carrosselImg" style="transition: opacity 0.5s ease;">
+                    <div class="nav-arrows">
+                        <i class="fas fa-chevron-left"></i>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="como-funciona">
+        <h2 class="section-title">Como o AcolheJá Funciona?</h2>
+        <div class="cards-container">
+            <div class="card">
+                <i class="fas fa-user-plus card-icon"></i>
+                <h3>Cadastro Simples</h3>
+                <p>Crie sua conta em poucos passos, garantindo total privacidade e segurança dos seus dados em nossa plataforma.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-comments card-icon"></i>
+                <h3>Conexão Imediata</h3>
+                <p>Nossa plataforma conecta você rapidamente a profissionais e voluntários preparados para ouvir e ajudar.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-heart card-icon"></i>
+                <h3>Acolhimento</h3>
+                <p>Receba o suporte necessário de forma totalmente humanizada, sem julgamentos e sem burocracias.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobre.html">Sobre nós</a></li>
+                    <li><a href="ferramenta.html">Ferramentas</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-social">
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá - Contato</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="javaScript.js" defer></script>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="ferramenta.html">Ferramenta</a>
+            <a href="login.html" class="btn-login-nav">Login</a>
+        </nav>
+    </header>
+
+    <main class="main-wrapper" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+        <div class="auth-card" style="max-width: 850px; width: 100%; margin: 0 auto;"> 
+            <div class="form-content" style="text-align: center; padding: 40px;">
+                <h2>Entre em Contato</h2>
+                <p style="margin-bottom: 30px;">Tem alguma dúvida ou precisa de suporte? Nossa equipe está pronta para te ouvir.</p>
+
+                <!-- Grid principal -->
+                <div class="grid-inputs" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; text-align: left;">
+                    
+                    <!-- COLUNA ESQUERDA: Nossos Canais (Centralizada Verticalmente) -->
+                    <div style="padding: 25px; background: #f9f9f9; border-radius: 15px; border: 1px solid #eee; height: fit-content; align-self: center;">
+                        <h3 style="color: #2b5da7; margin-bottom: 20px; font-size: 1.1rem; text-align: center;">Nossos Canais</h3>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 20px; font-size: 0.9rem;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <i class="fas fa-envelope" style="color: #f3824a; font-size: 1.2rem;"></i>
+                                <span><strong>E-mail:</strong><br>contato@acolheja.com.br</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <i class="fas fa-phone-alt" style="color: #f3824a; font-size: 1.2rem;"></i>
+                                <span><strong>Telefone:</strong><br>(11) 4002-8922</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <i class="fas fa-map-marker-alt" style="color: #f3824a; font-size: 1.2rem;"></i>
+                                <span><strong>Endereço:</strong><br>Av. Paulista, 1000 - SP</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA DIREITA: Formulário -->
+                    <form action="#" method="POST" id="contatoForm">
+                        <div class="input-container" style="margin-top: 0;">
+                            <label>Nome</label>
+                            <div class="input-icon">
+                                <i class="far fa-user"></i>
+                                <input type="text" placeholder="Seu nome" required>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <label>Assunto</label>
+                            <div class="input-icon">
+                                <i class="fas fa-tag"></i>
+                                <input type="text" placeholder="Motivo do contato" required>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <label>Mensagem</label>
+                            <div class="input-icon" style="border-radius: 15px; align-items: flex-start;">
+                                <i class="far fa-comment-dots" style="margin-top: 12px;"></i>
+                                <textarea placeholder="Como podemos ajudar?" style="width: 100%; border: none; outline: none; padding: 10px 0; min-height: 100px; font-family: inherit; resize: none;" required></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="btnEnviarContato" style="width: 100%; margin-top: 10px;">Enviar Mensagem</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobre.html">Sobre nós</a></li>
+                    <li><a href="ferramenta.html">Ferramentas</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-social">
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

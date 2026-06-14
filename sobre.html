@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>AcolheJá - Sobre</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="javaScript.js"></script>
+</head>
+<body class="home-page">
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="ferramenta.html">Ferramenta</a>
+            <a href="afiliadoLogin.html">Parceiros</a>
+            <a href="contato.html">Contato</a>
+            <div class="search-box">
+                <input type="search" placeholder="Pesquisar..." class="search-input">
+                <i class="fas fa-search"></i>
+            </div>
+            <a href="login.html" class="btn-login-nav">Login</a>
+        </nav>
+    </header>
+     <section class="sobre">
+        <img src="imagens/logo2.png" width="300px">
+        <h1>Sobre a Acolhe Já</h1>
+        <div class="linha"></div>
+
+        <p class="descricao">
+            A <strong>Acolhe Já</strong> nasceu do desejo de conectar pessoas a soluções de forma humanizada, ágil e eficiente.
+            Acreditamos que o acolhimento é a base para qualquer relação de confiança e sucesso.
+        </p>
+    </section>
+
+    <section class="historia">
+        <h2>Nossa História</h2>
+
+        <p>
+            Fundada com o propósito de transformar o atendimento no mercado, a Acolhe Já utiliza tecnologia e empatia
+            para garantir que cada interação seja única. Nossa paleta de cores reflete nossa diversidade e energia:
+            o calor do laranja, a paixão do rosa, o equilíbrio do verde e a solidez do azul.
+        </p>
+        <main>
+    </section>
+
+    <section class="cards">
+        <div class="card missao">
+            <h3>Nossa Missão</h3>
+            <p>
+                Oferecer suporte e acolhimento imediato, garantindo que ninguém se sinta desamparado em suas necessidades.
+            </p>
+        </div>
+
+        <div class="card visao">
+            <h3>Nossa Visão</h3>
+            <p>
+                Ser a principal referência em atendimento humanizado e soluções rápidas em todo o território nacional.
+            </p>
+        </div>
+
+        <div class="card valores">
+            <h3>Nossos Valores</h3>
+            <ul>
+                <li>Empatia em primeiro lugar</li>
+                <li>Transparência total</li>
+                <li>Inovação constante</li>
+                <li>Respeito à diversidade</li>
+            </ul>
+        </div>
+    </section>
+</main>
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-logo-info">
+            <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+            <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+        </div>
+        
+        <div class="footer-links">
+            <h3>Navegação</h3>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="sobre.html">Sobre nós</a></li>
+                <li><a href="ferramenta.html">Ferramentas</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-social">
+            <h3>Redes Sociais</h3>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+    </div>
+</footer>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* TOPO */
+.topo {
+    text-align: center;
+    padding: 40px 0;
+    background-color: #eee;
+}
+
+.topo img {
+    width: 80px;
+}
+
+.topo p {
+    color: #2b5da7;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* SOBRE */
+.sobre {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.sobre h1 {
+    font-size: 36px;
+    color: #2b5da7;
+}
+
+.linha {
+    width: 60px;
+    height: 5px;
+    margin: 10px auto;
+    background: linear-gradient(to right, orange, red, green);
+    border-radius: 5px;
+}
+
+.descricao {
+    max-width: 700px;
+    margin: 20px auto;
+    line-height: 1.6;
+}
+
+/* HISTORIA */
+.historia {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.historia h2 {
+    margin-bottom: 10px;
+}
+
+.historia p {
+    line-height: 1.6;
+}
+
+/* CARDS */
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: white;
+    width: 280px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* BORDAS COLORIDAS */
+.missao {
+    border-top: 5px solid orange;
+}
+
+.visao {
+    border-top: 5px solid #e91e63;
+}
+
+.valores {
+    border-top: 5px solid green;
+}
+
+.card h3 {
+    margin-bottom: 10px;
+}
+
+.card p, .card ul {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.card ul {
+    padding-left: 20px;
+}
+</style>
+</body>
+</html>

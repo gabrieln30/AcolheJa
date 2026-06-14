@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá - Meu Painel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── Painel Variables ── */
+        :root {
+            --blue:    #2b5da7;
+            --blue-dk: #1a417a;
+            --orange:  #f3824a;
+            --pink:    #e83174;
+            --teal:    #32bcad;
+            --bg:      #f0f4f9;
+            --card:    #ffffff;
+            --text:    #2c3143;
+            --muted:   #6b7a99;
+        }
+
+        body.painel-page {
+            background: var(--bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ── Loading Overlay ── */
+        #loadingOverlay {
+            position: fixed; inset: 0;
+            background: var(--blue);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        #loadingOverlay .loader-logo {
+            font-size: 3rem;
+            color: white;
+            font-weight: 900;
+            letter-spacing: -1px;
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+        #loadingOverlay .loader-dots {
+            display: flex; gap: 8px; margin-top: 20px;
+        }
+        #loadingOverlay .loader-dots span {
+            width: 10px; height: 10px;
+            background: var(--orange);
+            border-radius: 50%;
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+        #loadingOverlay .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+        #loadingOverlay .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.8; transform: scale(0.97); }
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40%           { transform: translateY(-10px); }
+        }
+
+        /* ── Redirect Screen ── */
+        #redirectScreen {
+            display: none;
+            position: fixed; inset: 0;
+            background: var(--bg);
+            align-items: center; justify-content: center;
+            flex-direction: column;
+            z-index: 9998;
+            text-align: center;
+            padding: 2rem;
+        }
+        #redirectScreen i {
+            font-size: 4rem;
+            color: var(--orange);
+            margin-bottom: 1.5rem;
+        }
+        #redirectScreen h2 {
+            color: var(--blue);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        #redirectScreen p { color: var(--muted); }
+        #redirectScreen a {
+            margin-top: 1.5rem;
+            display: inline-block;
+            background: var(--blue);
+            color: white;
+            padding: 12px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        #redirectScreen a:hover { background: var(--blue-dk); transform: translateY(-2px); }
+
+        /* ── Main Wrapper ── */
+        .painel-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 5% 4rem;
+        }
+
+        /* ── Welcome Banner ── */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 60%, #0f2d58 100%);
+            border-radius: 20px;
+            padding: 2.5rem 2.5rem 2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(43,93,167,0.25);
+            animation: slideDown 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 220px; height: 220px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: 80px;
+            width: 180px; height: 180px;
+            background: rgba(243,130,74,0.12);
+            border-radius: 50%;
+        }
+        .avatar-circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange), var(--pink));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: 900;
+            flex-shrink: 0;
+            border: 3px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(232,49,116,0.4);
+            position: relative; z-index: 1;
+        }
+        .welcome-info { position: relative; z-index: 1; }
+        .welcome-info .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(243,130,74,0.25);
+            border: 1px solid rgba(243,130,74,0.5);
+            color: #ffc18a;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+        .welcome-info h1 {
+            font-size: 1.9rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+        .welcome-info h1 span { color: var(--orange); }
+        .welcome-info p {
+            font-size: 0.9rem;
+            opacity: 0.75;
+            margin: 0;
+        }
+        .welcome-actions {
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative; z-index: 1;
+        }
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-logout:hover {
+            background: rgba(232,49,116,0.4);
+            border-color: var(--pink);
+            transform: translateY(-1px);
+        }
+        .btn-editar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.35);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .btn-editar:hover {
+            background: rgba(50,188,173,0.35);
+            border-color: var(--teal);
+            transform: translateY(-1px);
+        }
+
+        /* ── Edit Modal ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9990;
+            padding: 1rem;
+            opacity: 0;
+            animation: fadeModalIn 0.25s ease forwards;
+        }
+        @keyframes fadeModalIn {
+            to { opacity: 1; }
+        }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(43,93,167,0.2);
+            animation: slideModalUp 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        @keyframes slideModalUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f4f9;
+        }
+        .modal-header h2 { font-size: 1.15rem; font-weight: 800; color: var(--blue); margin: 0; }
+        .modal-close {
+            background: #f0f4f9; border: none; border-radius: 50%;
+            width: 34px; height: 34px; cursor: pointer;
+            font-size: 1rem; color: var(--muted);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: #fde8f1; color: var(--pink); }
+        .modal-section-title {
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--blue); opacity: 0.7;
+            margin: 1.4rem 0 0.8rem;
+        }
+        .modal-field { margin-bottom: 1rem; }
+        .modal-field label {
+            display: block; font-size: 0.82rem; font-weight: 600;
+            color: var(--text); margin-bottom: 5px;
+        }
+        .modal-field label span { color: #e53935; }
+        .modal-input-wrap {
+            display: flex; align-items: center; gap: 0;
+            border: 1.5px solid #dce4f0; border-radius: 10px;
+            background: #f8fafc; overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .modal-input-wrap:focus-within {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(43,93,167,0.1);
+            background: white;
+        }
+        .modal-input-wrap.field-err { border-color: #e53935; box-shadow: 0 0 0 3px rgba(229,57,53,0.1); }
+        .modal-input-wrap.field-ok  { border-color: #27ae60; box-shadow: 0 0 0 3px rgba(39,174,96,0.1); }
+        .modal-input-wrap i {
+            padding: 0 12px; color: var(--blue); font-size: 0.9rem; flex-shrink: 0;
+        }
+        .modal-input-wrap input, .modal-input-wrap select {
+            flex: 1; border: none; outline: none; background: transparent;
+            font-size: 0.9rem; color: var(--text); padding: 10px 12px 10px 0;
+        }
+        .modal-input-wrap select { cursor: pointer; }
+        .modal-field-msg { font-size: 0.75rem; margin-top: 4px; min-height: 16px; }
+        .modal-field-msg.ok  { color: #27ae60; }
+        .modal-field-msg.err { color: #e53935; }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+        .modal-footer {
+            display: flex; gap: 10px; justify-content: flex-end;
+            margin-top: 1.8rem; padding-top: 1.2rem;
+            border-top: 2px solid #f0f4f9;
+        }
+        .btn-modal-cancel {
+            padding: 10px 22px; border-radius: 30px;
+            border: 1.5px solid #dce4f0; background: white;
+            font-size: 0.875rem; font-weight: 600; color: var(--muted);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-modal-cancel:hover { border-color: var(--pink); color: var(--pink); }
+        .btn-modal-save {
+            padding: 10px 28px; border-radius: 30px;
+            border: none; background: var(--blue);
+            font-size: 0.875rem; font-weight: 700; color: white;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-modal-save:hover { background: var(--blue-dk); transform: translateY(-1px); }
+        .btn-modal-save.loading { opacity: 0.7; pointer-events: none; }
+
+        /* Toast inline do painel */
+        #painelToastContainer {
+            position: fixed; top: 24px; right: 24px; z-index: 99999;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .p-toast {
+            display: flex; align-items: flex-start; gap: 12px;
+            min-width: 280px; max-width: 360px;
+            padding: 14px 18px; border-radius: 14px;
+            font-size: 0.875rem; font-weight: 500; line-height: 1.45;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15); pointer-events: all;
+            animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            position: relative; overflow: hidden;
+        }
+        .p-toast::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            height: 3px; animation: toastBar var(--td,4s) linear forwards;
+        }
+        .p-toast.removing { animation: toastOut 0.3s ease forwards; }
+        .p-toast.success { background:#f0fff6; border:1.5px solid #b3e6c8; color:#135c35; }
+        .p-toast.success::after { background:#27ae60; }
+        .p-toast.error   { background:#fff0f0; border:1.5px solid #f8bebe; color:#7a1a1a; }
+        .p-toast.error::after { background:#e53935; }
+        .p-toast-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+        .p-toast.success .p-toast-icon { color:#27ae60; }
+        .p-toast.error   .p-toast-icon { color:#e53935; }
+        .p-toast-body { flex:1; }
+        .p-toast-title { font-weight:700; margin-bottom:2px; }
+        .p-toast-close { background:none; border:none; cursor:pointer; opacity:0.4; font-size:0.85rem; padding:0; color:inherit; }
+        .p-toast-close:hover { opacity:1; }
+        @keyframes toastIn  { from{opacity:0;transform:translateX(60px) scale(0.9)} to{opacity:1;transform:translateX(0) scale(1)} }
+        @keyframes toastOut { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(60px) scale(0.9)} }
+        @keyframes toastBar { from{width:100%} to{width:0%} }
+
+        /* ── Stats Row ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.4rem 1.5rem;
+            box-shadow: 0 4px 15px rgba(43,93,167,0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeUp 0.6s ease both;
+        }
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .stat-icon.blue   { background: #e8f0fc; color: var(--blue); }
+        .stat-icon.orange { background: #fff0e8; color: var(--orange); }
+        .stat-icon.pink   { background: #fde8f1; color: var(--pink); }
+        .stat-icon.teal   { background: #e4f8f6; color: var(--teal); }
+        .stat-val {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--text);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* ── Grid Columns ── */
+        .painel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* ── Panel Card ── */
+        .panel-card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 18px rgba(43,93,167,0.08);
+            animation: fadeUp 0.7s ease both;
+        }
+        .panel-card:nth-child(1) { animation-delay: 0.2s; }
+        .panel-card:nth-child(2) { animation-delay: 0.3s; }
+        .panel-card:nth-child(3) { animation-delay: 0.35s; grid-column: 1 / -1; }
+        .panel-card:nth-child(4) { animation-delay: 0.4s; }
+        .panel-card:nth-child(5) { animation-delay: 0.45s; }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.3rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f4f9;
+        }
+        .card-header-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+        /* ── Profile Info ── */
+        .info-list { list-style: none; padding: 0; margin: 0; }
+        .info-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f4f9;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        .info-list li:last-child { border-bottom: none; }
+        .info-list li i {
+            width: 28px; height: 28px;
+            background: #f0f4f9;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--blue);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .info-list li span { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
+
+        /* ── Quick Actions ── */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 1.1rem 0.5rem;
+            border-radius: 14px;
+            border: 2px solid transparent;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        .action-btn i { font-size: 1.4rem; }
+        .action-btn.blue-act  { border-color: #dce8fa; }
+        .action-btn.orange-act{ border-color: #fde8d5; }
+        .action-btn.pink-act  { border-color: #fce0ec; }
+        .action-btn.teal-act  { border-color: #d4f3ef; }
+        .action-btn.blue-act:hover   { background: #dce8fa; color: var(--blue); transform: translateY(-3px); }
+        .action-btn.orange-act:hover { background: #fde8d5; color: var(--orange); transform: translateY(-3px); }
+        .action-btn.pink-act:hover   { background: #fce0ec; color: var(--pink); transform: translateY(-3px); }
+        .action-btn.teal-act:hover   { background: #d4f3ef; color: var(--teal); transform: translateY(-3px); }
+        .action-btn.blue-act  i { color: var(--blue); }
+        .action-btn.orange-act i { color: var(--orange); }
+        .action-btn.pink-act  i { color: var(--pink); }
+        .action-btn.teal-act  i { color: var(--teal); }
+
+        /* ── Activity Timeline ── */
+        .timeline { list-style: none; padding: 0; margin: 0; }
+        .timeline li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f4f9;
+            font-size: 0.88rem;
+            color: var(--text);
+            animation: fadeUp 0.5s ease both;
+        }
+        .timeline li:last-child { border-bottom: none; }
+        .tl-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+        .tl-blue   { background: var(--blue); }
+        .tl-orange { background: var(--orange); }
+        .tl-pink   { background: var(--pink); }
+        .tl-teal   { background: var(--teal); }
+        .tl-content { flex: 1; }
+        .tl-content strong { display: block; font-weight: 700; color: var(--text); }
+        .tl-content time { font-size: 0.74rem; color: var(--muted); }
+        .tl-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+        .tl-badge.ok   { background: #e4f8f6; color: var(--teal); }
+        .tl-badge.info { background: #e8f0fc; color: var(--blue); }
+        .tl-badge.warn { background: #fff0e8; color: var(--orange); }
+
+        /* ── Session Info ── */
+        .session-block {
+            background: linear-gradient(135deg, #f8fafc, #eef2f8);
+            border-radius: 12px;
+            padding: 1.2rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .session-block i { color: var(--teal); font-size: 1.2rem; }
+        .session-block strong { color: var(--text); }
+
+        /* ── Progress Card ── */
+        .progress-item { margin-bottom: 16px; }
+        .progress-item:last-child { margin-bottom: 0; }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .progress-header span { color: var(--muted); font-weight: 400; }
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #eef2f8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        /* ── Empresa Extras ── */
+        .empresa-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, var(--teal), #27a99a);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .welcome-banner { flex-direction: column; text-align: center; }
+            .welcome-actions { margin-left: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+            .painel-grid { grid-template-columns: 1fr; }
+            .panel-card:nth-child(3) { grid-column: 1; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .welcome-info h1 { font-size: 1.4rem; }
+            .avatar-circle { width: 60px; height: 60px; font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="painel-page">
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="loader-logo">AcolheJá</div>
+        <div class="loader-dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Not Logged In Screen -->
+    <div id="redirectScreen">
+        <i class="fas fa-lock"></i>
+        <h2>Acesso Restrito</h2>
+        <p>Você precisa estar logado para acessar o painel.</p>
+        <a href="login.html"><i class="fas fa-sign-in-alt"></i> Ir para o Login</a>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="navbar" id="mainNavbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="ferramenta.html">Ferramenta</a>
+            <a href="contato.html">Contato</a>
+            <a href="doacao.html">Doações</a>
+        </nav>
+    </header>
+
+    <!-- PAINEL CONTENT (hidden until JS confirms login) -->
+    <div id="painelContent" style="display:none;">
+        <div class="painel-wrapper">
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner" id="welcomeBanner">
+                <div class="avatar-circle" id="avatarCircle">?</div>
+                <div class="welcome-info">
+                    <div class="badge-tipo" id="badgeTipo">
+                        <i class="fas fa-circle-notch fa-spin"></i> Carregando...
+                    </div>
+                    <h1>Olá, <span id="nomeUsuario">...</span>! 👋</h1>
+                    <p id="subtipoInfo">Bem-vindo ao seu painel AcolheJá.</p>
+                </div>
+                <div class="welcome-actions">
+                    <button class="btn-editar" id="btnEditarPerfil">
+                        <i class="fas fa-user-edit"></i> Editar Perfil
+                    </button>
+                    <button class="btn-logout" id="btnLogout">
+                        <i class="fas fa-sign-out-alt"></i> Sair da conta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row" id="statsRow">
+                <!-- populated by JS -->
+            </div>
+
+            <!-- Grid -->
+            <div class="painel-grid" id="painelGrid">
+                <!-- populated by JS -->
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-logo-info">
+                    <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                    <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Navegação</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="sobre.html">Sobre nós</a></li>
+                        <li><a href="ferramenta.html">Ferramentas</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h3>Redes Sociais</h3>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast container -->
+    <div id="painelToastContainer"></div>
+
+    <script src="javaScript.js" defer></script>
+    <script>
+    /* ── Toast util ── */
+    const PainelToast = {
+        _c: null,
+        get() { return this._c || (this._c = document.getElementById('painelToastContainer')); },
+        show(type, title, msg, dur=4000) {
+            const t = document.createElement('div');
+            t.className = `p-toast ${type}`;
+            t.style.setProperty('--td', dur+'ms');
+            const icon = type==='success' ? 'fas fa-circle-check' : 'fas fa-circle-xmark';
+            t.innerHTML = `<i class="${icon} p-toast-icon"></i>
+                <div class="p-toast-body">
+                    ${title ? `<div class="p-toast-title">${title}</div>` : ''}
+                    <div>${msg}</div>
+                </div>
+                <button class="p-toast-close" aria-label="Fechar"><i class="fas fa-xmark"></i></button>`;
+            const close = () => { t.classList.add('removing'); t.addEventListener('animationend', ()=>t.remove(),{once:true}); };
+            t.querySelector('.p-toast-close').addEventListener('click', close);
+            this.get().appendChild(t);
+            setTimeout(close, dur);
+        },
+        ok(msg, title='Salvo!')    { this.show('success', title, msg); },
+        err(msg, title='Erro')     { this.show('error',   title, msg); }
+    };
+
+    /* ── Abre modal de edição de perfil ── */
+    function abrirModalEditar(dadosAtuais) {
+        // Remove modal anterior
+        document.getElementById('modalEditar')?.remove();
+
+        const usuarios = JSON.parse(localStorage.getItem('acolheja_usuarios') || '[]');
+        const userRecord = usuarios.find(u => u.login === dadosAtuais.login) || {};
+
+        const modal = document.createElement('div');
+        modal.id = 'modalEditar';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalEditarTitle">
+                <div class="modal-header">
+                    <h2 id="modalEditarTitle"><i class="fas fa-user-edit" style="color:var(--blue);margin-right:8px;"></i>Editar Perfil</h2>
+                    <button class="modal-close" id="btnModalClose" aria-label="Fechar"><i class="fas fa-xmark"></i></button>
+                </div>
+
+                <div class="modal-section-title">Dados Pessoais</div>
+
+                <div class="modal-field">
+                    <label for="ed-nome">Nome Completo <span>*</span></label>
+                    <div class="modal-input-wrap" id="ew-nome">
+                        <i class="fas fa-user"></i>
+                        <input id="ed-nome" type="text" maxlength="60" value="${userRecord.nome || dadosAtuais.nome || ''}" placeholder="Mín. 15 letras">
+                    </div>
+                    <div class="modal-field-msg" id="em-nome"></div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label for="ed-dataNasc">Data de Nascimento</label>
+                        <div class="modal-input-wrap" id="ew-dataNasc">
+                            <i class="far fa-calendar"></i>
+                            <input id="ed-dataNasc" type="text" maxlength="10" value="${userRecord.dataNasc || ''}" placeholder="dd/mm/aaaa">
+                        </div>
+                        <div class="modal-field-msg" id="em-dataNasc"></div>
+                    </div>
+                    <div class="modal-field">
+                        <label for="ed-sexo">Sexo</label>
+                        <div class="modal-input-wrap" id="ew-sexo">
+                            <i class="fas fa-venus-mars"></i>
+                            <select id="ed-sexo">
+                                <option value="">Selecione...</option>
+                                <option value="M" ${userRecord.sexo==='M'?'selected':''}>Masculino</option>
+                                <option value="F" ${userRecord.sexo==='F'?'selected':''}>Feminino</option>
+                                <option value="NB" ${userRecord.sexo==='NB'?'selected':''}>Não-binário</option>
+                                <option value="NI" ${userRecord.sexo==='NI'?'selected':''}>Prefiro não informar</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-field">
+                    <label for="ed-nomeMaterno">Nome Materno</label>
+                    <div class="modal-input-wrap" id="ew-nomeMaterno">
+                        <i class="fas fa-heart"></i>
+                        <input id="ed-nomeMaterno" type="text" value="${userRecord.nomeMaterno || ''}" placeholder="Nome completo da mãe">
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label for="ed-cpf">CPF</label>
+                        <div class="modal-input-wrap" id="ew-cpf">
+                            <i class="fas fa-id-card"></i>
+                            <input id="ed-cpf" type="text" maxlength="14" value="${userRecord.cpf || ''}" placeholder="000.000.000-00">
+                        </div>
+                        <div class="modal-field-msg" id="em-cpf"></div>
+                    </div>
+                    <div class="modal-field">
+                        <label for="ed-celular">Telefone Celular</label>
+                        <div class="modal-input-wrap" id="ew-celular">
+                            <i class="fas fa-mobile-alt"></i>
+                            <input id="ed-celular" type="text" maxlength="17" value="${userRecord.celular || ''}" placeholder="(+55)XX-XXXXXXXXX">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label for="ed-fixo">Telefone Fixo</label>
+                        <div class="modal-input-wrap" id="ew-fixo">
+                            <i class="fas fa-phone-alt"></i>
+                            <input id="ed-fixo" type="text" maxlength="16" value="${userRecord.fixo || ''}" placeholder="(+55)XX-XXXXXXXX">
+                        </div>
+                    </div>
+                    <div class="modal-field" style="grid-column:1/-1">
+                        <label for="ed-endereco">Endereço Completo</label>
+                        <div class="modal-input-wrap" id="ew-endereco">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input id="ed-endereco" type="text" value="${userRecord.endereco || ''}" placeholder="Rua, número, bairro, cidade - UF">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-section-title">Dados de Acesso</div>
+
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label for="ed-login">Login</label>
+                        <div class="modal-input-wrap" id="ew-login">
+                            <i class="fas fa-at"></i>
+                            <input id="ed-login" type="text" maxlength="6" value="${dadosAtuais.login || ''}" placeholder="6 letras" readonly style="opacity:0.6;cursor:not-allowed;">
+                        </div>
+                        <div class="modal-field-msg ok">Login não pode ser alterado.</div>
+                    </div>
+                    <div class="modal-field">
+                        <label for="ed-senhaNova">Nova Senha <span style="font-weight:400;color:var(--muted);font-size:0.75rem;">(deixe vazio para manter)</span></label>
+                        <div class="modal-input-wrap" id="ew-senhaNova">
+                            <i class="fas fa-lock"></i>
+                            <input id="ed-senhaNova" type="password" maxlength="8" placeholder="8 letras">
+                            <i class="fas fa-eye" id="toggleEdSenha" style="padding:0 10px;cursor:pointer;color:#b0b8c8;font-size:0.9rem;" title="Mostrar/ocultar"></i>
+                        </div>
+                        <div class="modal-field-msg" id="em-senhaNova"></div>
+                    </div>
+                </div>
+
+                <div class="modal-field">
+                    <label for="ed-senhaAtual">Senha Atual <span>*</span> <span style="font-weight:400;color:var(--muted);font-size:0.75rem;">para confirmar alterações</span></label>
+                    <div class="modal-input-wrap" id="ew-senhaAtual">
+                        <i class="fas fa-key"></i>
+                        <input id="ed-senhaAtual" type="password" maxlength="8" placeholder="Digite sua senha atual">
+                        <i class="fas fa-eye" id="toggleEdSenhaAtual" style="padding:0 10px;cursor:pointer;color:#b0b8c8;font-size:0.9rem;" title="Mostrar/ocultar"></i>
+                    </div>
+                    <div class="modal-field-msg" id="em-senhaAtual"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-modal-cancel" id="btnModalCancel">Cancelar</button>
+                    <button class="btn-modal-save"   id="btnModalSave"><i class="fas fa-floppy-disk"></i> Salvar Alterações</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Fecha ao clicar no overlay
+        modal.addEventListener('click', e => { if (e.target === modal) fecharModal(); });
+        document.getElementById('btnModalClose').addEventListener('click', fecharModal);
+        document.getElementById('btnModalCancel').addEventListener('click', fecharModal);
+
+        // Toggle senha
+        document.getElementById('toggleEdSenha').addEventListener('click', function() {
+            const i = document.getElementById('ed-senhaNova');
+            i.type = i.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash');
+        });
+        document.getElementById('toggleEdSenhaAtual').addEventListener('click', function() {
+            const i = document.getElementById('ed-senhaAtual');
+            i.type = i.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Máscara data
+        document.getElementById('ed-dataNasc').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g,'');
+            if (v.length>2) v = v.slice(0,2)+'/'+v.slice(2);
+            if (v.length>5) v = v.slice(0,5)+'/'+v.slice(5,9);
+            e.target.value = v;
+        });
+        // Máscara CPF
+        document.getElementById('ed-cpf').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g,'');
+            if (v.length>3)  v = v.slice(0,3)+'.'+v.slice(3);
+            if (v.length>7)  v = v.slice(0,7)+'.'+v.slice(7);
+            if (v.length>11) v = v.slice(0,11)+'-'+v.slice(11,13);
+            e.target.value = v;
+        });
+
+        // Salvar
+        document.getElementById('btnModalSave').addEventListener('click', () => {
+            const nome       = document.getElementById('ed-nome').value.trim();
+            const senhaAtual = document.getElementById('ed-senhaAtual').value;
+            const senhaNova  = document.getElementById('ed-senhaNova').value;
+            const btn        = document.getElementById('btnModalSave');
+
+            // Validar senha atual
+            if (!senhaAtual) {
+                setEditField('ew-senhaAtual','em-senhaAtual','err','Informe sua senha atual para confirmar.');
+                PainelToast.err('Informe sua senha atual para salvar as alterações.','Confirmação necessária');
+                return;
+            }
+            if (senhaAtual !== userRecord.senha) {
+                setEditField('ew-senhaAtual','em-senhaAtual','err','Senha atual incorreta.');
+                PainelToast.err('A senha informada não corresponde à senha atual.','Senha incorreta');
+                return;
+            }
+            setEditField('ew-senhaAtual','em-senhaAtual','ok','✓');
+
+            // Validar nome
+            if (nome.length < 15 || !/^[A-Za-zÀ-ÿ\s]+$/.test(nome)) {
+                setEditField('ew-nome','em-nome','err','Mínimo 15 letras, sem números.');
+                PainelToast.err('O nome deve ter pelo menos 15 letras.','Nome inválido');
+                return;
+            }
+            setEditField('ew-nome','em-nome','ok','✓ OK');
+
+            // Validar nova senha (se preenchida)
+            if (senhaNova && !/^[A-Za-zÀ-ÿ]{8}$/.test(senhaNova)) {
+                setEditField('ew-senhaNova','em-senhaNova','err','Exatamente 8 letras.');
+                PainelToast.err('A nova senha deve ter exatamente 8 letras.','Senha inválida');
+                return;
+            }
+
+            // Atualiza no array de usuários
+            const idx = usuarios.findIndex(u => u.login === dadosAtuais.login);
+            if (idx === -1) {
+                PainelToast.err('Usuário não encontrado no cadastro.','Erro interno');
+                return;
+            }
+
+            const novaSenha = senhaNova || userRecord.senha;
+            usuarios[idx] = {
+                ...usuarios[idx],
+                nome,
+                sexo:        document.getElementById('ed-sexo').value,
+                nomeMaterno: document.getElementById('ed-nomeMaterno').value.trim(),
+                cpf:         document.getElementById('ed-cpf').value.trim(),
+                celular:     document.getElementById('ed-celular').value.trim(),
+                fixo:        document.getElementById('ed-fixo').value.trim(),
+                endereco:    document.getElementById('ed-endereco').value.trim(),
+                senha:       novaSenha,
+                atualizadoEm: new Date().toISOString()
+            };
+            localStorage.setItem('acolheja_usuarios', JSON.stringify(usuarios));
+
+            // Atualiza a sessão ativa
+            const sessao = JSON.parse(localStorage.getItem('acolheja_sessao') || '{}');
+            sessao.nome = nome;
+            localStorage.setItem('acolheja_sessao', JSON.stringify(sessao));
+
+            btn.classList.add('loading');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Salvando...';
+
+            PainelToast.ok('Seus dados foram atualizados com sucesso!','Perfil atualizado');
+
+            setTimeout(() => {
+                fecharModal();
+                // Atualiza nome no banner sem recarregar a página
+                document.getElementById('nomeUsuario').textContent = nome;
+                document.getElementById('avatarCircle').textContent = nome.charAt(0).toUpperCase();
+                // Recarrega card de perfil
+                location.reload();
+            }, 1200);
+        });
+    }
+
+    function fecharModal() {
+        const m = document.getElementById('modalEditar');
+        if (!m) return;
+        m.style.opacity = '0';
+        m.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => m.remove(), 200);
+    }
+
+    function setEditField(wrapId, msgId, state, msg) {
+        const wrap = document.getElementById(wrapId);
+        const span = document.getElementById(msgId);
+        if (!wrap) return;
+        wrap.classList.remove('field-err','field-ok');
+        if (state) wrap.classList.add(state==='err'?'field-err':'field-ok');
+        if (span) { span.textContent=msg; span.className='modal-field-msg '+(state||''); }
+    }
+    </script>
+    <script>
+    /* ================================================================
+       PAINEL — Lógica principal
+    ================================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const overlay     = document.getElementById('loadingOverlay');
+        const redirect    = document.getElementById('redirectScreen');
+        const painelEl    = document.getElementById('painelContent');
+        const btnLogout   = document.getElementById('btnLogout');
+
+        /* ── 1. Ler dados do localStorage ── */
+        let usuario  = null;
+        let empresa  = null;
+
+        // Novo sistema (acolheja_sessao gravado pelo login.html)
+        try {
+            const sessaoNova = localStorage.getItem('acolheja_sessao');
+            if (sessaoNova) {
+                const s = JSON.parse(sessaoNova);
+                if (s.tipo === 'empresa') empresa = s;
+                else usuario = s;
+            }
+        } catch(e) {}
+
+        // Fallback: sistema legado
+        if (!usuario && !empresa) {
+            try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch(e) {}
+            try { empresa = JSON.parse(localStorage.getItem('empresaLogada')); } catch(e) {}
+        }
+
+        const logado   = usuario || empresa;
+        const isEmpresa = !!empresa && !usuario;
+
+        /* ── 2. Esconder loading após breve delay ── */
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+
+                if (!logado) {
+                    redirect.style.display = 'flex';
+                    return;
+                }
+
+                painelEl.style.display = 'block';
+                construirPainel(isEmpresa ? empresa : usuario, isEmpresa);
+
+            }, 500);
+        }, 800);
+
+        /* ── 3. Logout ── */
+        btnLogout && btnLogout.addEventListener('click', () => {
+            if (confirm('Deseja realmente sair da sua conta?')) {
+                localStorage.removeItem('acolheja_sessao');
+                localStorage.removeItem('usuarioLogado');
+                localStorage.removeItem('empresaLogada');
+                window.location.href = 'login.html';
+            }
+        });
+
+        /* ── 3.5 Editar Perfil ── */
+        // Conecta o botão de editar perfil à função de abertura do modal
+        const btnEditar = document.getElementById('btnEditarPerfil');
+        btnEditar && btnEditar.addEventListener('click', () => {
+            abrirModalEditar(isEmpresa ? empresa : usuario);
+        });
+
+        /* ── 4. Construir Painel ── */
+        function construirPainel(dados, isEmp) {
+            // Determinar nome de exibição
+            let nome    = 'Usuário';
+            let inicial = 'U';
+            let subtipo = '';
+            let email   = '';
+            let cnpj    = '';
+
+            if (isEmp) {
+                cnpj    = dados.cnpj || dados.nomeEmpresa || 'Empresa';
+                nome    = dados.nomeEmpresa || dados.cnpj || 'Empresa Parceira';
+                inicial = nome.charAt(0).toUpperCase();
+                email   = dados.email || '—';
+                subtipo = 'Administrador de empresa parceira';
+            } else {
+                nome    = dados.nome || dados.email?.split('@')[0] || 'Usuário';
+                inicial = nome.charAt(0).toUpperCase();
+                email   = dados.email || '—';
+                subtipo = 'Usuário registrado';
+            }
+
+            const dataLogin = dados.dataLogin
+                ? new Date(dados.dataLogin).toLocaleString('pt-BR')
+                : '—';
+
+            /* Avatar + título */
+            document.getElementById('avatarCircle').textContent = inicial;
+            document.getElementById('nomeUsuario').textContent  = nome;
+            document.getElementById('subtipoInfo').textContent  = subtipo;
+
+            /* Badge tipo */
+            const badge = document.getElementById('badgeTipo');
+            if (isEmp) {
+                badge.innerHTML = '<i class="fas fa-handshake"></i> Empresa Parceira';
+                badge.style.background = 'rgba(50,188,173,0.25)';
+                badge.style.borderColor = 'rgba(50,188,173,0.5)';
+                badge.style.color = '#a0f0e8';
+            } else {
+                badge.innerHTML = '<i class="fas fa-user-circle"></i> Usuário';
+            }
+
+            /* ── Stats ── */
+            const statsData = isEmp
+                ? [
+                    { icon: 'fa-briefcase',    cls: 'blue',   val: '1',  label: 'Parceria Ativa'     },
+                    { icon: 'fa-users',         cls: 'teal',   val: '—',  label: 'Atendimentos'       },
+                    { icon: 'fa-chart-line',    cls: 'orange', val: '—',  label: 'Impacto'            },
+                    { icon: 'fa-star',          cls: 'pink',   val: '★★★★★', label: 'Avaliação'     },
+                  ]
+                : [
+                    { icon: 'fa-heart',         cls: 'pink',   val: '0',  label: 'Atendimentos'       },
+                    { icon: 'fa-comments',      cls: 'blue',   val: '0',  label: 'Conversas'          },
+                    { icon: 'fa-calendar-check',cls: 'teal',   val: '0',  label: 'Agendamentos'       },
+                    { icon: 'fa-star',          cls: 'orange', val: '★★★★★', label: 'Satisfação'    },
+                  ];
+
+            const statsRow = document.getElementById('statsRow');
+            statsRow.innerHTML = statsData.map(s => `
+                <div class="stat-card">
+                    <div class="stat-icon ${s.cls}"><i class="fas ${s.icon}"></i></div>
+                    <div>
+                        <div class="stat-val">${s.val}</div>
+                        <div class="stat-label">${s.label}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            /* ── Grid Cards ── */
+            const grid = document.getElementById('painelGrid');
+            grid.innerHTML = '';
+
+            /* Card 1 — Dados do perfil */
+            const card1 = document.createElement('div');
+            card1.className = 'panel-card';
+            card1.innerHTML = `
+                <div class="card-header">
+                    <div class="card-header-icon blue" style="background:#e8f0fc; color:var(--blue);">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <h3>${isEmp ? 'Dados da Empresa' : 'Meu Perfil'}</h3>
+                </div>
+                <ul class="info-list">
+                    ${isEmp
+                        ? `<li><i class="fas fa-building"></i> ${nome} <span>Empresa</span></li>
+                           <li><i class="fas fa-barcode"></i> ${cnpj} <span>CNPJ</span></li>
+                           <li><i class="fas fa-envelope"></i> ${email} <span>E-mail</span></li>`
+                        : `<li><i class="fas fa-user"></i> ${nome} <span>Nome</span></li>
+                           <li><i class="fas fa-envelope"></i> ${email} <span>E-mail</span></li>
+                           <li><i class="fas fa-shield-alt"></i> Conta verificada <span>Status</span></li>`
+                    }
+                    <li><i class="fas fa-clock"></i> ${dataLogin} <span>Último acesso</span></li>
+                </ul>
+                ${isEmp ? '<div class="empresa-badge"><i class="fas fa-check-circle"></i> Parceiro verificado</div>' : ''}
+            `;
+            grid.appendChild(card1);
+
+            /* Card 2 — Ações rápidas */
+            const card2 = document.createElement('div');
+            card2.className = 'panel-card';
+            const acoesUsuario = `
+                <div class="actions-grid">
+                    <a href="telaForm.html" class="action-btn blue-act">
+                        <i class="fas fa-hands-helping"></i> Buscar Apoio
+                    </a>
+                    <a href="ferramenta.html" class="action-btn orange-act">
+                        <i class="fas fa-tools"></i> Ferramentas
+                    </a>
+                    <a href="doacao.html" class="action-btn pink-act">
+                        <i class="fas fa-heart"></i> Fazer Doação
+                    </a>
+                    <a href="contato.html" class="action-btn teal-act">
+                        <i class="fas fa-comment-dots"></i> Falar com Suporte
+                    </a>
+                </div>`;
+            const acoesEmpresa = `
+                <div class="actions-grid">
+                    <a href="#" class="action-btn blue-act">
+                        <i class="fas fa-file-alt"></i> Relatórios
+                    </a>
+                    <a href="#" class="action-btn orange-act">
+                        <i class="fas fa-users-cog"></i> Gerenciar Equipe
+                    </a>
+                    <a href="contato.html" class="action-btn teal-act">
+                        <i class="fas fa-headset"></i> Suporte Corporativo
+                    </a>
+                    <a href="#" class="action-btn pink-act">
+                        <i class="fas fa-chart-bar"></i> Métricas
+                    </a>
+                </div>`;
+            card2.innerHTML = `
+                <div class="card-header">
+                    <div class="card-header-icon orange" style="background:#fff0e8; color:var(--orange);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Ações Rápidas</h3>
+                </div>
+                ${isEmp ? acoesEmpresa : acoesUsuario}
+            `;
+            grid.appendChild(card2);
+
+            /* Card 3 — Atividade recente (full width) */
+            const card3 = document.createElement('div');
+            card3.className = 'panel-card';
+            const timelineItems = isEmp
+                ? [
+                    { dot:'tl-teal',   label:'Parceria aprovada',       time:'Hoje',         badge:'ok',   badgeLabel:'Concluído' },
+                    { dot:'tl-blue',   label:'Cadastro realizado',       time:'Hoje',         badge:'info', badgeLabel:'Info' },
+                    { dot:'tl-orange', label:'Documentação pendente',    time:'Aguardando',   badge:'warn', badgeLabel:'Pendente' },
+                  ]
+                : [
+                    { dot:'tl-teal',   label:'Login realizado com sucesso', time:dataLogin,   badge:'ok',   badgeLabel:'Sucesso' },
+                    { dot:'tl-blue',   label:'Perfil criado',            time:'Cadastro',     badge:'info', badgeLabel:'Info' },
+                    { dot:'tl-pink',   label:'Bem-vindo ao AcolheJá!',   time:'Agora',        badge:'ok',   badgeLabel:'Novo' },
+                  ];
+            card3.innerHTML = `
+                <div class="card-header">
+                    <div class="card-header-icon teal" style="background:#e4f8f6; color:var(--teal);">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Atividade Recente</h3>
+                </div>
+                <ul class="timeline">
+                    ${timelineItems.map(it => `
+                        <li>
+                            <div class="tl-dot ${it.dot}"></div>
+                            <div class="tl-content">
+                                <strong>${it.label}</strong>
+                                <time>${it.time}</time>
+                            </div>
+                            <span class="tl-badge ${it.badge}">${it.badgeLabel}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+            grid.appendChild(card3);
+
+            /* Card 4 — Progresso / Engajamento */
+            const card4 = document.createElement('div');
+            card4.className = 'panel-card';
+            const progressItems = isEmp
+                ? [
+                    { label:'Perfil da Empresa',  pct:75,  color:'var(--blue)'   },
+                    { label:'Documentação',        pct:40,  color:'var(--orange)' },
+                    { label:'Visibilidade',        pct:60,  color:'var(--teal)'   },
+                  ]
+                : [
+                    { label:'Perfil completo',     pct:60,  color:'var(--blue)'   },
+                    { label:'Bem-estar',           pct:80,  color:'var(--teal)'   },
+                    { label:'Engajamento',         pct:45,  color:'var(--orange)' },
+                  ];
+            card4.innerHTML = `
+                <div class="card-header">
+                    <div class="card-header-icon pink" style="background:#fde8f1; color:var(--pink);">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>${isEmp ? 'Status da Parceria' : 'Meu Progresso'}</h3>
+                </div>
+                ${progressItems.map(p => `
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            ${p.label}
+                            <span>${p.pct}%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" data-pct="${p.pct}" style="background:${p.color};"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+            grid.appendChild(card4);
+
+            /* Card 5 — Sessão */
+            const card5 = document.createElement('div');
+            card5.className = 'panel-card';
+            card5.innerHTML = `
+                <div class="card-header">
+                    <div class="card-header-icon teal" style="background:#e4f8f6; color:var(--teal);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Informações de Sessão</h3>
+                </div>
+                <div class="session-block">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        Sessão ativa como <strong>${isEmp ? 'Empresa Parceira' : 'Usuário'}</strong>.
+                        Login realizado em <strong>${dataLogin}</strong>.
+                        Seus dados estão protegidos.
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card5);
+
+            /* ── Animar barras de progresso após render ── */
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                    bar.style.width = bar.dataset.pct + '%';
+                });
+            }, 300);
+        }
+    });
+    </script>
+</body>
+</html>

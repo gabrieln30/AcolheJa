@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá - Teste de LocalStorage</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .teste-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #f5f7fa;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+        }
+        .info-box {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #2b5da7;
+            border-radius: 4px;
+        }
+        .status-logado {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .status-deslogado {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .json-display {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        .botoes-teste {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-test {
+            background: #2b5da7;
+            color: white;
+        }
+        .btn-test:hover {
+            background: #1a417a;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #229954;
+        }
+        h1 {
+            color: #2b5da7;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #2b5da7;
+            padding-bottom: 0.5rem;
+        }
+        .lista-dados {
+            list-style: none;
+            padding: 0;
+        }
+        .lista-dados li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .lista-dados strong {
+            color: #2b5da7;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="testeLocalStorage.html" style="color: #ffc107;">📋 Teste LocalStorage</a>
+        </nav>
+    </header>
+
+    <main class="main-wrapper">
+        <div class="teste-container">
+            <h1>🧪 Teste do Sistema de Login com LocalStorage</h1>
+            
+            <div class="info-box">
+                <h2>📊 Status da Sessão</h2>
+                <p>
+                    Usuário Logado: 
+                    <span id="statusUsuario" class="status-deslogado">❌ Nenhum usuário logado</span>
+                </p>
+                <p>
+                    Empresa Logada: 
+                    <span id="statusEmpresa" class="status-deslogado">❌ Nenhuma empresa logada</span>
+                </p>
+            </div>
+
+            <div class="info-box">
+                <h2>👤 Dados do Usuário</h2>
+                <div id="dadosUsuario">
+                    <p class="status-deslogado">Sem dados armazenados</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h2>🏢 Dados da Empresa</h2>
+                <div id="dadosEmpresa">
+                    <p class="status-deslogado">Sem dados armazenados</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h2>📝 Conteúdo do LocalStorage</h2>
+                <p><small>Todos os dados armazenados no navegador:</small></p>
+                <div id="localStorageContent" class="json-display">
+                    {}
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h2>🎮 Ações de Teste</h2>
+                <p><small>Clique nos botões para testar o sistema:</small></p>
+                
+                <div class="botoes-teste">
+                    <button class="btn-test" onclick="atualizarTela()">
+                        <i class="fas fa-sync-alt"></i> Atualizar
+                    </button>
+                    <button class="btn-test" onclick="testeLoginUsuario()">
+                        <i class="fas fa-user-plus"></i> Teste Login Usuário
+                    </button>
+                    <button class="btn-test" onclick="testeLoginEmpresa()">
+                        <i class="fas fa-briefcase"></i> Teste Login Empresa
+                    </button>
+                    <button class="btn-danger" onclick="fazerLogout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                    <button class="btn-danger" onclick="limparLocalStorage()">
+                        <i class="fas fa-trash"></i> Limpar Tudo
+                    </button>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h2>📚 Instruções</h2>
+                <ul class="lista-dados">
+                    <li><strong>Passo 1:</strong> Clique em "Teste Login Usuário" para simular um login</li>
+                    <li><strong>Passo 2:</strong> Observe os dados sendo armazenados no LocalStorage</li>
+                    <li><strong>Passo 3:</strong> Atualize a página (F5) - os dados permanecerão!</li>
+                    <li><strong>Passo 4:</strong> Clique em "Logout" para limpar a sessão</li>
+                    <li><strong>Abra o DevTools:</strong> F12 → Console → Digite: <code>localStorage</code></li>
+                </ul>
+            </div>
+
+            <div class="info-box" style="background: #e8f4f8; border-left-color: #3498db;">
+                <h2>💡 Como Usar no Login Real</h2>
+                <p>Acesse <a href="login.html">login.html</a> ou <a href="afiliadoLogin.html">afiliadoLogin.html</a> para fazer um login de verdade. Os dados serão armazenados e você será redirecionado.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="javaScript.js"></script>
+    <script>
+        // Funções de teste
+        function atualizarTela() {
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+            const empresa = JSON.parse(localStorage.getItem('empresaLogada'));
+
+            // Status do usuário
+            const statusUsuario = document.getElementById('statusUsuario');
+            if (usuario) {
+                statusUsuario.textContent = `✅ ${usuario.email}`;
+                statusUsuario.className = 'status-logado';
+            } else {
+                statusUsuario.textContent = '❌ Nenhum usuário logado';
+                statusUsuario.className = 'status-deslogado';
+            }
+
+            // Status da empresa
+            const statusEmpresa = document.getElementById('statusEmpresa');
+            if (empresa) {
+                statusEmpresa.textContent = `✅ ${empresa.cnpj}`;
+                statusEmpresa.className = 'status-logado';
+            } else {
+                statusEmpresa.textContent = '❌ Nenhuma empresa logada';
+                statusEmpresa.className = 'status-deslogado';
+            }
+
+            // Dados do usuário
+            const dadosUsuario = document.getElementById('dadosUsuario');
+            if (usuario) {
+                dadosUsuario.innerHTML = `
+                    <ul class="lista-dados">
+                        <li><strong>Email:</strong> ${usuario.email}</li>
+                        <li><strong>Tipo:</strong> ${usuario.tipo}</li>
+                        <li><strong>Data de Login:</strong> ${new Date(usuario.dataLogin).toLocaleString('pt-BR')}</li>
+                    </ul>
+                `;
+            } else {
+                dadosUsuario.innerHTML = '<p class="status-deslogado">Sem dados armazenados</p>';
+            }
+
+            // Dados da empresa
+            const dadosEmpresa = document.getElementById('dadosEmpresa');
+            if (empresa) {
+                dadosEmpresa.innerHTML = `
+                    <ul class="lista-dados">
+                        <li><strong>CNPJ:</strong> ${empresa.cnpj}</li>
+                        <li><strong>Tipo:</strong> ${empresa.tipo}</li>
+                        <li><strong>Data de Login:</strong> ${new Date(empresa.dataLogin).toLocaleString('pt-BR')}</li>
+                    </ul>
+                `;
+            } else {
+                dadosEmpresa.innerHTML = '<p class="status-deslogado">Sem dados armazenados</p>';
+            }
+
+            // LocalStorage completo
+            const localStorageContent = document.getElementById('localStorageContent');
+            const allData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                allData[key] = JSON.parse(localStorage.getItem(key));
+            }
+            localStorageContent.textContent = JSON.stringify(allData, null, 2);
+        }
+
+        function testeLoginUsuario() {
+            localStorage.setItem('usuarioLogado', JSON.stringify({
+                email: 'usuario@teste.com',
+                tipo: 'usuario',
+                dataLogin: new Date().toISOString()
+            }));
+            alert('✅ Login de usuário simulado! Dados salvos em localStorage.');
+            atualizarTela();
+        }
+
+        function testeLoginEmpresa() {
+            localStorage.setItem('empresaLogada', JSON.stringify({
+                cnpj: '12.345.678/0001-90',
+                tipo: 'empresa',
+                dataLogin: new Date().toISOString()
+            }));
+            alert('✅ Login de empresa simulado! Dados salvos em localStorage.');
+            atualizarTela();
+        }
+
+        function limparLocalStorage() {
+            if (confirm('⚠️ Tem certeza que deseja limpar TODO o localStorage?')) {
+                localStorage.clear();
+                alert('✅ LocalStorage limpo!');
+                atualizarTela();
+            }
+        }
+
+        // Atualizar ao carregar a página
+        document.addEventListener('DOMContentLoaded', atualizarTela);
+    </script>
+</body>
+</html>

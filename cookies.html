@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá - Central de Cookies</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html"><img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo"></a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="contato.html">Contato</a>
+        </nav>
+    </header>
+
+    <main class="main-wrapper">
+        <div class="unified-container">
+            <div class="page-header">
+                <h1>🍪 Central de Cookies</h1>
+                <p>Transparência, controle e segurança dos seus dados</p>
+            </div>
+
+            <!-- NAVEGAÇÃO DAS ABAS -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="abrirAbaCookies(event, 'aba-politica')">
+                    <i class="fas fa-book"></i> Política de Cookies
+                </button>
+                <button class="tab-btn" onclick="abrirAbaCookies(event, 'aba-gerenciar')">
+                    <i class="fas fa-cog"></i> Gerenciar Meus Cookies
+                </button>
+                <button class="tab-btn" onclick="abrirAbaCookies(event, 'aba-teste')">
+                    <i class="fas fa-flask"></i> Ferramentas de Teste
+                </button>
+            </div>
+
+            <!-- ABA 1: POLÍTICA -->
+            <div id="aba-politica" class="tab-content active">
+                <div class="section-cookies">
+                    <h2>O que são Cookies?</h2>
+                    <p>Cookies são pequenos arquivos de texto armazenados no seu navegador que nos ajudam a reconhecê-lo e a lembrar suas preferências. Eles não contêm informações pessoais identificáveis, mas permitem uma experiência mais personalizada.</p>
+                </div>
+
+                <div class="section-cookies">
+                    <h2>Tipos de Cookies Usados</h2>
+                    <div class="cookie-type">
+                        <h4><i class="fas fa-lock"></i> Essenciais <span class="cookie-badge">Obrigatório</span></h4>
+                        <p>Necessários para o funcionamento básico do site. Não podem ser desativados.</p>
+                    </div>
+                    <div class="cookie-type">
+                        <h4><i class="fas fa-chart-line"></i> Análise <span class="cookie-badge optional">Opcional</span></h4>
+                        <p>Ajudam-nos a melhorar a experiência do usuário rastreando páginas visitadas.</p>
+                    </div>
+                    <div class="cookie-type">
+                        <h4><i class="fas fa-bullhorn"></i> Publicidade <span class="cookie-badge optional">Opcional</span></h4>
+                        <p>Utilizados para exibir anúncios relevantes com base no seu interesse.</p>
+                    </div>
+                </div>
+
+                <div class="section-cookies">
+                    <h2>Tabela Detalhada</h2>
+                    <table class="table-cookies">
+                        <thead>
+                            <tr><th>Nome do Cookie</th><th>Tipo</th><th>Duração</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>cookieConsent</td><td>Essencial</td><td>365 dias</td></tr>
+                            <tr><td>cookieAnalytics</td><td>Análise</td><td>365 dias</td></tr>
+                            <tr><td>cookieAdvertising</td><td>Publicidade</td><td>365 dias</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ABA 2: GERENCIAR -->
+            <div id="aba-gerenciar" class="tab-content">
+                <div class="section-cookies">
+                    <h2>📊 Suas Estatísticas Locais</h2>
+                    <div class="stats-cookies">
+                        <div class="stat-card-cookies">
+                            <div style="font-size: 2rem; color: #2b5da7; font-weight: bold;" id="totalCookies">0</div>
+                            <div style="color: #666;">Total de Cookies</div>
+                        </div>
+                        <div class="stat-card-cookies">
+                            <div style="font-size: 2rem; color: #2b5da7; font-weight: bold;" id="essentialCookies">0</div>
+                            <div style="color: #666;">Essenciais</div>
+                        </div>
+                    </div>
+                    <button class="btn-cookies primary" onclick="abrirModalConfiguracaoCookies()" style="margin-top: 1rem;">
+                        <i class="fas fa-sliders-h"></i> Alterar Preferências (LGPD)
+                    </button>
+                </div>
+
+                <div class="section-cookies">
+                    <h2>🍪 Cookies Salvos no seu Navegador</h2>
+                    <div class="alert-cookies info">Aqui você tem visibilidade total dos dados armazenados localmente.</div>
+                    <div id="cookiesList"></div>
+                    
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn-cookies secondary" onclick="exibirCookiesPainel()"><i class="fas fa-sync"></i> Recarregar Lista</button>
+                        <button class="btn-cookies danger" onclick="confirmarLimparTodos()"><i class="fas fa-trash"></i> Limpar Tudo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: TESTES (Desenvolvedor) -->
+            <div id="aba-teste" class="tab-content">
+                <div class="alert-cookies info">
+                    <strong>Área de Testes:</strong> Use estas ferramentas para validar o funcionamento do <code>CookieManager</code>.
+                </div>
+
+                <div class="section-cookies">
+                    <h2>1️⃣ Criar um Cookie Manualmente</h2>
+                    <div class="form-group-cookies">
+                        <input type="text" id="testCookieName" placeholder="Nome do Cookie (ex: tema)">
+                    </div>
+                    <div class="form-group-cookies">
+                        <input type="text" id="testCookieValue" placeholder="Valor (ex: escuro)">
+                    </div>
+                    <button class="btn-cookies secondary" onclick="criarCookieTeste()">Criar Cookie</button>
+                </div>
+
+                <div class="section-cookies">
+                    <h2>2️⃣ Status do Consentimento</h2>
+                    <div id="consentOutput" style="background: white; padding: 1rem; border: 1px solid #ddd;"></div>
+                    <button class="btn-cookies primary" onclick="verificarConsentimentoPainel()" style="margin-top: 1rem;">Verificar Status Atual</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa.</p>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 Projeto AcolheJá.</p></div>
+    </footer>
+
+    <script src="javaScript.js"></script>
+</body>
+</html>

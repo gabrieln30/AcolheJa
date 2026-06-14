@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá - Cadastro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* ══════════════════════════════════════════════
+           TOAST NOTIFICATION SYSTEM
+        ══════════════════════════════════════════════ */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 380px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.45;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            pointer-events: all;
+            animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.45);
+            animation: toastBar var(--toast-dur, 4s) linear forwards;
+        }
+
+        .toast.removing {
+            animation: toastOut 0.3s ease forwards;
+        }
+
+        .toast--error {
+            background: #fff0f0;
+            border: 1.5px solid #f8bebe;
+            color: #7a1a1a;
+        }
+        .toast--error .toast-icon { color: #e53935; }
+        .toast--error::after { background: #e53935; opacity: 0.5; }
+
+        .toast--success {
+            background: #f0fff6;
+            border: 1.5px solid #b3e6c8;
+            color: #135c35;
+        }
+        .toast--success .toast-icon { color: #27ae60; }
+        .toast--success::after { background: #27ae60; opacity: 0.5; }
+
+        .toast--warning {
+            background: #fffbf0;
+            border: 1.5px solid #f8dca0;
+            color: #7a4e00;
+        }
+        .toast--warning .toast-icon { color: #f3a000; }
+        .toast--warning::after { background: #f3a000; opacity: 0.5; }
+
+        /* Dark mode toasts */
+        [data-theme="dark"] .toast--error {
+            background: #2a0a0a; border-color: #6b2222; color: #ffb3b3;
+        }
+        [data-theme="dark"] .toast--success {
+            background: #0a2a17; border-color: #1e6b42; color: #a3f0c5;
+        }
+        [data-theme="dark"] .toast--warning {
+            background: #2a1e00; border-color: #6b4e00; color: #ffd980;
+        }
+
+        .toast-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+        .toast-body { flex: 1; }
+        .toast-title { font-weight: 700; margin-bottom: 2px; }
+        .toast-msg  { opacity: 0.85; }
+
+        .toast-close {
+            background: none; border: none; cursor: pointer;
+            opacity: 0.45; font-size: 0.85rem; padding: 0; line-height: 1;
+            color: inherit; flex-shrink: 0; margin-top: 1px;
+            transition: opacity 0.15s;
+        }
+        .toast-close:hover { opacity: 1; }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(60px) scale(0.9); }
+            to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0) scale(1); }
+            to   { opacity: 0; transform: translateX(60px) scale(0.9); }
+        }
+        @keyframes toastBar {
+            from { width: 100%; }
+            to   { width: 0%; }
+        }
+
+        /* ══════════════════════════════════════════════
+           CAMPO COM ERRO — highlight
+        ══════════════════════════════════════════════ */
+        .input-icon.field-error input,
+        .input-icon.field-error select {
+            border-color: #e53935 !important;
+            box-shadow: 0 0 0 3px rgba(229,57,53,0.12) !important;
+        }
+        .input-icon.field-ok input,
+        .input-icon.field-ok select {
+            border-color: #27ae60 !important;
+            box-shadow: 0 0 0 3px rgba(39,174,96,0.10) !important;
+        }
+        .field-msg {
+            font-size: 0.78rem;
+            margin-top: 4px;
+            min-height: 16px;
+            transition: color 0.2s;
+        }
+        .field-msg.ok  { color: #27ae60; }
+        .field-msg.err { color: #e53935; }
+
+        /* ══════════════════════════════════════════════
+           STRENGTH BAR (senha)
+        ══════════════════════════════════════════════ */
+        .strength-wrap {
+            margin-top: 6px;
+        }
+        .strength-bar {
+            height: 4px;
+            border-radius: 4px;
+            background: #e0e4ee;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+        .strength-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ══════════════════════════════════════════════
+           BOTÃO DE ENVIO com estado de loading
+        ══════════════════════════════════════════════ */
+        .btn-primary.loading {
+            pointer-events: none;
+            opacity: 0.75;
+        }
+
+        /* ══════════════════════════════════════════════
+           GRID DE CAMPOS 2 COLUNAS
+        ══════════════════════════════════════════════ */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 20px;
+        }
+        @media (max-width: 640px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* ══════════════════════════════════════════════
+           SELECT ESTILIZADO (sexo)
+        ══════════════════════════════════════════════ */
+        .input-icon select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        [data-theme="dark"] .input-icon select option {
+            background: #1a1d27;
+            color: #c5cfe6;
+        }
+
+        /* Cabeçalho da seção */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 16px;
+            color: #2b5da7;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.2;
+        }
+        [data-theme="dark"] .section-divider {
+            color: #7da8f0;
+        }
+
+        /* Dark mode: elementos específicos do cadastro */
+        [data-theme="dark"] .field-msg.ok  { color: #57d98a; }
+        [data-theme="dark"] .field-msg.err { color: #ff7b7b; }
+        [data-theme="dark"] .strength-bar  { background: #2d3555; }
+
+        footer:not(.site-footer) { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Aplica dark mode antes de renderizar -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('acolheja_tema') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <!-- ── TOAST CONTAINER ── -->
+    <div id="toast-container" role="alert" aria-live="assertive" aria-atomic="false"></div>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html"><img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo"></a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <main class="main-wrapper">
+        <div class="auth-card" style="max-width: 660px;">
+            <div class="auth-tabs">
+                <a href="login.html"   class="tab-btn inactive"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+                <a href="cadastro.html" class="tab-btn active"><i class="fas fa-user-plus"></i> Cadastrar</a>
+            </div>
+
+            <div class="form-content">
+                <h2>Crie sua conta</h2>
+                <p>Preencha os dados abaixo para cadastrar-se na plataforma AcolheJá.</p>
+
+                <form id="cadForm" novalidate autocomplete="off">
+
+                    <!-- ── DADOS PESSOAIS ── -->
+                    <div class="section-divider"><i class="fas fa-user"></i> Dados Pessoais</div>
+
+                    <div class="input-container">
+                        <label for="nome">Nome Completo <span style="color:#e53935">*</span></label>
+                        <div class="input-icon" id="wrap-nome">
+                            <i class="far fa-user"></i>
+                            <input type="text" id="nome" placeholder="Mínimo 15, máximo 60 caracteres" maxlength="60" required>
+                        </div>
+                        <span class="field-msg" id="msg-nome"></span>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="input-container">
+                            <label for="dataNasc">Data de Nascimento <span style="color:#e53935">*</span></label>
+                            <div class="input-icon" id="wrap-dataNasc">
+                                <i class="far fa-calendar"></i>
+                                <input type="text" id="dataNasc" placeholder="dd/mm/aaaa" maxlength="10" required>
+                            </div>
+                            <span class="field-msg" id="msg-dataNasc"></span>
+                        </div>
+
+                        <div class="input-container">
+                            <label for="sexo">Sexo <span style="color:#e53935">*</span></label>
+                            <div class="input-icon" id="wrap-sexo">
+                                <i class="fas fa-venus-mars"></i>
+                                <select id="sexo" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Feminino</option>
+                                    <option value="NB">Não-binário</option>
+                                    <option value="NI">Prefiro não informar</option>
+                                </select>
+                                <i class="fas fa-chevron-down" style="font-size:0.75rem; color:#b0b8c8; pointer-events:none;"></i>
+                            </div>
+                            <span class="field-msg" id="msg-sexo"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <label for="nomeMaterno">Nome Materno <span style="color:#e53935">*</span></label>
+                        <div class="input-icon" id="wrap-nomeMaterno">
+                            <i class="fas fa-heart"></i>
+                            <input type="text" id="nomeMaterno" placeholder="Nome completo da mãe" required>
+                        </div>
+                        <span class="field-msg" id="msg-nomeMaterno"></span>
+                    </div>
+
+                    <div class="input-container">
+                        <label for="cpf">CPF <span style="color:#e53935">*</span></label>
+                        <div class="input-icon" id="wrap-cpf">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
+                        </div>
+                        <span class="field-msg" id="msg-cpf"></span>
+                    </div>
+
+                    <!-- ── CONTATO ── -->
+                    <div class="section-divider"><i class="fas fa-phone"></i> Contato</div>
+
+                    <div class="grid-2">
+                        <div class="input-container">
+                            <label for="celular">Telefone Celular <span style="color:#e53935">*</span></label>
+                            <div class="input-icon" id="wrap-celular">
+                                <i class="fas fa-mobile-alt"></i>
+                                <input type="text" id="celular" placeholder="(+55)XX-XXXXXXXXX" maxlength="18" required>
+                            </div>
+                            <span class="field-msg" id="msg-celular"></span>
+                        </div>
+
+                        <div class="input-container">
+                            <label for="fixo">Telefone Fixo <span style="color:#e53935">*</span></label>
+                            <div class="input-icon" id="wrap-fixo">
+                                <i class="fas fa-phone-alt"></i>
+                                <input type="text" id="fixo" placeholder="(+55)XX-XXXXXXXX" maxlength="18" required>
+                            </div>
+                            <span class="field-msg" id="msg-fixo"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <label for="endereco">Endereço Completo <span style="color:#e53935">*</span></label>
+                        <div class="input-icon" id="wrap-endereco">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" id="endereco" placeholder="Rua, número, complemento, bairro, cidade - UF" required>
+                        </div>
+                        <span class="field-msg" id="msg-endereco"></span>
+                    </div>
+
+                    <!-- ── ACESSO ── -->
+                    <div class="section-divider"><i class="fas fa-key"></i> Dados de Acesso</div>
+
+                    <div class="input-container">
+                        <label for="login">Login <span style="color:#e53935">*</span></label>
+                        <div class="input-icon" id="wrap-login">
+                            <i class="fas fa-at"></i>
+                            <input type="text" id="login" placeholder="Exatamente 6 letras (ex: joaosi)" maxlength="6" required>
+                        </div>
+                        <span class="field-msg" id="msg-login"></span>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="input-container">
+                            <label for="senha1">Senha <span style="color:#e53935">*</span></label>
+                            <div class="input-icon" id="wrap-senha1">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="senha1" placeholder="Exatamente 8 letras" maxlength="8" required>
+                                <i class="fas fa-eye toggle-pass" data-target="senha1" style="cursor:pointer; color:#b0b8c8; margin-left:8px;" title="Mostrar/ocultar senha"></i>
+                            </div>
+                            <div class="strength-wrap">
+                                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                                <span class="strength-label field-msg" id="msg-senha1"></span>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <label for="senha2">Confirmar Senha <span style="color:#e53935">*</span></label>
+                            <div class="input-icon" id="wrap-senha2">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="senha2" placeholder="Repita a senha" maxlength="8" required>
+                                <i class="fas fa-eye toggle-pass" data-target="senha2" style="cursor:pointer; color:#b0b8c8; margin-left:8px;" title="Mostrar/ocultar senha"></i>
+                            </div>
+                            <span class="field-msg" id="msg-senha2"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="btnCad">
+                        <i class="fas fa-user-plus"></i> Criar minha conta
+                    </button>
+                </form>
+
+                <div class="footer-text">
+                    <p>Já possui conta? <a href="login.html">Faça login</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobre.html">Sobre nós</a></li>
+                    <li><a href="ferramenta.html">Ferramentas</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="javaScript.js"></script>
+    <script>
+    /* ═══════════════════════════════════════════════════════
+       TOAST SYSTEM
+    ═══════════════════════════════════════════════════════ */
+    const ToastManager = {
+        _container: null,
+
+        _getContainer() {
+            if (!this._container) this._container = document.getElementById('toast-container');
+            return this._container;
+        },
+
+        show({ type = 'error', title = '', msg = '', duration = 4500 }) {
+            const icons = {
+                error:   'fas fa-circle-xmark',
+                success: 'fas fa-circle-check',
+                warning: 'fas fa-triangle-exclamation'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            toast.style.setProperty('--toast-dur', duration + 'ms');
+            toast.innerHTML = `
+                <i class="${icons[type] || icons.error} toast-icon"></i>
+                <div class="toast-body">
+                    ${title ? `<div class="toast-title">${title}</div>` : ''}
+                    <div class="toast-msg">${msg}</div>
+                </div>
+                <button class="toast-close" aria-label="Fechar"><i class="fas fa-xmark"></i></button>
+            `;
+
+            const close = () => {
+                toast.classList.add('removing');
+                toast.addEventListener('animationend', () => toast.remove(), { once: true });
+            };
+
+            toast.querySelector('.toast-close').addEventListener('click', close);
+            this._getContainer().appendChild(toast);
+            setTimeout(close, duration);
+            return toast;
+        },
+
+        error(msg, title = 'Campo inválido')   { return this.show({ type: 'error',   title, msg }); },
+        success(msg, title = 'Tudo certo!')    { return this.show({ type: 'success', title, msg }); },
+        warning(msg, title = 'Atenção')        { return this.show({ type: 'warning', title, msg }); }
+    };
+
+    /* ═══════════════════════════════════════════════════════
+       HELPERS DE FEEDBACK POR CAMPO
+    ═══════════════════════════════════════════════════════ */
+    function setFieldState(wrapId, msgId, state, msg) {
+        const wrap = document.getElementById(wrapId);
+        const span = document.getElementById(msgId);
+        if (!wrap || !span) return;
+
+        wrap.classList.remove('field-error', 'field-ok');
+        span.classList.remove('ok', 'err');
+        span.textContent = '';
+
+        if (state === 'error') {
+            wrap.classList.add('field-error');
+            span.classList.add('err');
+            span.textContent = msg;
+        } else if (state === 'ok') {
+            wrap.classList.add('field-ok');
+            span.classList.add('ok');
+            span.textContent = msg || '✓ OK';
+        }
+    }
+
+    function clearField(wrapId, msgId) {
+        setFieldState(wrapId, msgId, null, '');
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       MASKS
+    ═══════════════════════════════════════════════════════ */
+    // Data dd/mm/aaaa
+    document.getElementById('dataNasc').addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+        if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
+        e.target.value = v;
+    });
+
+    // CPF 000.000.000-00
+    document.getElementById('cpf').addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 3)  v = v.slice(0, 3) + '.' + v.slice(3);
+        if (v.length > 7)  v = v.slice(0, 7) + '.' + v.slice(7);
+        if (v.length > 11) v = v.slice(0, 11) + '-' + v.slice(11, 13);
+        e.target.value = v;
+    });
+
+    // Telefone (+55)XX-XXXXXXXXX  (celular: 9 dígitos)  (+55)XX-XXXXXXXX (fixo: 8 dígitos)
+    function maskPhone(input, maxDigits) {
+        input.addEventListener('input', function(e) {
+            let raw = e.target.value.replace(/\D/g, '');
+            if (raw.startsWith('55')) raw = raw.slice(2);
+            raw = raw.slice(0, 2 + maxDigits); // DDD + número
+
+            let out = '';
+            if (raw.length > 0) {
+                out = '(+55)';
+                if (raw.length >= 2) {
+                    out += raw.slice(0, 2) + '-';
+                    if (raw.length > 2) out += raw.slice(2);
+                } else {
+                    out += raw;
+                }
+            }
+            e.target.value = out;
+        });
+    }
+    maskPhone(document.getElementById('celular'), 9);
+    maskPhone(document.getElementById('fixo'),    8);
+
+    /* ═══════════════════════════════════════════════════════
+       TOGGLE SHOW/HIDE SENHA
+    ═══════════════════════════════════════════════════════ */
+    document.querySelectorAll('.toggle-pass').forEach(el => {
+        el.addEventListener('click', function() {
+            const input = document.getElementById(this.getAttribute('data-target'));
+            input.type = input.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash');
+        });
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       STRENGTH BAR (senha)
+    ═══════════════════════════════════════════════════════ */
+    const fill = document.getElementById('strength-fill');
+    function updateStrength(val) {
+        const len = val.length;
+        let pct = 0, color = '#e53935', label = '', cls = 'err';
+
+        if (len === 0)      { pct = 0;   color = '#e0e4ee'; label = ''; cls = ''; }
+        else if (len < 4)   { pct = 25;  color = '#e53935'; label = '❌ Muito curta'; }
+        else if (len < 6)   { pct = 50;  color = '#f3a000'; label = '⚠️ Fraca'; }
+        else if (len < 8)   { pct = 75;  color = '#2b9cf2'; label = '🔒 Quase lá...'; }
+        else                { pct = 100; color = '#27ae60'; label = '✅ Senha válida'; cls = 'ok'; }
+
+        fill.style.width     = pct + '%';
+        fill.style.background = color;
+
+        const msgEl = document.getElementById('msg-senha1');
+        msgEl.textContent = label;
+        msgEl.className   = 'strength-label field-msg ' + cls;
+    }
+
+    document.getElementById('senha1').addEventListener('input', function() {
+        updateStrength(this.value);
+        // Atualiza confirmação se já tiver algo
+        if (document.getElementById('senha2').value.length > 0) validateSenha2(true);
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       VALIDAÇÕES EM TEMPO REAL (blur)
+    ═══════════════════════════════════════════════════════ */
+    const regexApenasLetras  = /^[A-Za-zÀ-ÿ\s]+$/;
+    const regexPhone         = /^\(\+55\)\d{2}-\d{8,9}$/;
+    const regexData          = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+    function validateNome(silent = false) {
+        const v = document.getElementById('nome').value.trim();
+        if (!v) {
+            setFieldState('wrap-nome', 'msg-nome', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('O nome completo é obrigatório.', 'Nome obrigatório');
+            return false;
+        }
+        if (!regexApenasLetras.test(v)) {
+            setFieldState('wrap-nome', 'msg-nome', 'error', 'Somente letras e espaços.');
+            if (!silent) ToastManager.error('O nome deve conter apenas letras.', 'Nome inválido');
+            return false;
+        }
+        if (v.length < 15) {
+            setFieldState('wrap-nome', 'msg-nome', 'error', `Mínimo 15 caracteres (${v.length}/15).`);
+            if (!silent) ToastManager.error('O nome deve ter pelo menos 15 caracteres.', 'Nome muito curto');
+            return false;
+        }
+        if (v.length > 60) {
+            setFieldState('wrap-nome', 'msg-nome', 'error', 'Máximo 60 caracteres.');
+            if (!silent) ToastManager.error('O nome deve ter no máximo 60 caracteres.', 'Nome muito longo');
+            return false;
+        }
+        setFieldState('wrap-nome', 'msg-nome', 'ok', '✓ Nome válido');
+        return true;
+    }
+
+    function validateDataNasc(silent = false) {
+        const v = document.getElementById('dataNasc').value.trim();
+        if (!v) {
+            setFieldState('wrap-dataNasc', 'msg-dataNasc', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Informe a data de nascimento.', 'Data obrigatória');
+            return false;
+        }
+        const m = v.match(regexData);
+        if (!m) {
+            setFieldState('wrap-dataNasc', 'msg-dataNasc', 'error', 'Formato inválido. Use dd/mm/aaaa.');
+            if (!silent) ToastManager.error('Use o formato dd/mm/aaaa.', 'Data inválida');
+            return false;
+        }
+        const [, dd, mm, aaaa] = m;
+        const d = new Date(+aaaa, +mm - 1, +dd);
+        const hoje = new Date();
+        if (d > hoje || d.getMonth() !== +mm - 1) {
+            setFieldState('wrap-dataNasc', 'msg-dataNasc', 'error', 'Data inválida.');
+            if (!silent) ToastManager.error('A data informada não é válida.', 'Data inválida');
+            return false;
+        }
+        setFieldState('wrap-dataNasc', 'msg-dataNasc', 'ok', '✓ Data válida');
+        return true;
+    }
+
+    function validateSexo(silent = false) {
+        const v = document.getElementById('sexo').value;
+        if (!v) {
+            setFieldState('wrap-sexo', 'msg-sexo', 'error', 'Selecione uma opção.');
+            if (!silent) ToastManager.error('Selecione o sexo.', 'Sexo obrigatório');
+            return false;
+        }
+        setFieldState('wrap-sexo', 'msg-sexo', 'ok', '✓ Selecionado');
+        return true;
+    }
+
+    function validateNomeMaterno(silent = false) {
+        const v = document.getElementById('nomeMaterno').value.trim();
+        if (!v) {
+            setFieldState('wrap-nomeMaterno', 'msg-nomeMaterno', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Informe o nome materno.', 'Nome materno obrigatório');
+            return false;
+        }
+        setFieldState('wrap-nomeMaterno', 'msg-nomeMaterno', 'ok', '✓ Preenchido');
+        return true;
+    }
+
+    function validateCPF(silent = false) {
+        const raw = document.getElementById('cpf').value.replace(/\D/g, '');
+        if (!raw) {
+            setFieldState('wrap-cpf', 'msg-cpf', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Informe o CPF.', 'CPF obrigatório');
+            return false;
+        }
+        if (raw.length !== 11) {
+            setFieldState('wrap-cpf', 'msg-cpf', 'error', 'CPF deve ter 11 dígitos.');
+            if (!silent) ToastManager.error('O CPF deve ter 11 dígitos numéricos.', 'CPF inválido');
+            return false;
+        }
+        // Verificação dos dígitos verificadores
+        if (/^(\d)\1{10}$/.test(raw)) {
+            setFieldState('wrap-cpf', 'msg-cpf', 'error', 'CPF inválido.');
+            if (!silent) ToastManager.error('CPF inválido.', 'CPF inválido');
+            return false;
+        }
+        let s = 0;
+        for (let i = 0; i < 9; i++) s += +raw[i] * (10 - i);
+        let r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+        if (r !== +raw[9]) {
+            setFieldState('wrap-cpf', 'msg-cpf', 'error', 'CPF inválido.');
+            if (!silent) ToastManager.error('O CPF informado não é válido.', 'CPF inválido');
+            return false;
+        }
+        s = 0;
+        for (let i = 0; i < 10; i++) s += +raw[i] * (11 - i);
+        r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+        if (r !== +raw[10]) {
+            setFieldState('wrap-cpf', 'msg-cpf', 'error', 'CPF inválido.');
+            if (!silent) ToastManager.error('O CPF informado não é válido.', 'CPF inválido');
+            return false;
+        }
+        setFieldState('wrap-cpf', 'msg-cpf', 'ok', '✓ CPF válido');
+        return true;
+    }
+
+    function validateCelular(silent = false) {
+        const v = document.getElementById('celular').value.trim();
+        if (!v) {
+            setFieldState('wrap-celular', 'msg-celular', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Informe o telefone celular.', 'Celular obrigatório');
+            return false;
+        }
+        if (!regexPhone.test(v)) {
+            setFieldState('wrap-celular', 'msg-celular', 'error', 'Formato: (+55)XX-XXXXXXXXX');
+            if (!silent) ToastManager.error('Celular deve seguir o formato (+55)XX-XXXXXXXXX.', 'Celular inválido');
+            return false;
+        }
+        setFieldState('wrap-celular', 'msg-celular', 'ok', '✓ Celular válido');
+        return true;
+    }
+
+    function validateFixo(silent = false) {
+        const v = document.getElementById('fixo').value.trim();
+        if (!v) {
+            setFieldState('wrap-fixo', 'msg-fixo', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Informe o telefone fixo.', 'Telefone fixo obrigatório');
+            return false;
+        }
+        // Fixo: (+55)XX-XXXXXXXX (8 dígitos no número)
+        const regexFixo = /^\(\+55\)\d{2}-\d{8}$/;
+        if (!regexFixo.test(v)) {
+            setFieldState('wrap-fixo', 'msg-fixo', 'error', 'Formato: (+55)XX-XXXXXXXX');
+            if (!silent) ToastManager.error('Telefone fixo deve seguir o formato (+55)XX-XXXXXXXX.', 'Telefone inválido');
+            return false;
+        }
+        setFieldState('wrap-fixo', 'msg-fixo', 'ok', '✓ Telefone válido');
+        return true;
+    }
+
+    function validateEndereco(silent = false) {
+        const v = document.getElementById('endereco').value.trim();
+        if (!v) {
+            setFieldState('wrap-endereco', 'msg-endereco', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Informe o endereço completo.', 'Endereço obrigatório');
+            return false;
+        }
+        if (v.length < 10) {
+            setFieldState('wrap-endereco', 'msg-endereco', 'error', 'Endereço muito curto.');
+            if (!silent) ToastManager.error('Informe o endereço de forma completa.', 'Endereço incompleto');
+            return false;
+        }
+        setFieldState('wrap-endereco', 'msg-endereco', 'ok', '✓ Endereço preenchido');
+        return true;
+    }
+
+    function validateLogin(silent = false) {
+        const v = document.getElementById('login').value.trim();
+        if (!v) {
+            setFieldState('wrap-login', 'msg-login', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Defina um login.', 'Login obrigatório');
+            return false;
+        }
+        if (!/^[A-Za-zÀ-ÿ]{6}$/.test(v)) {
+            setFieldState('wrap-login', 'msg-login', 'error', `Exatamente 6 letras (${v.length} informado${v.length !== 1 ? 's' : ''}).`);
+            if (!silent) ToastManager.error('O login deve conter exatamente 6 letras (sem números ou símbolos).', 'Login inválido');
+            return false;
+        }
+        setFieldState('wrap-login', 'msg-login', 'ok', '✓ Login válido');
+        return true;
+    }
+
+    function validateSenha1(silent = false) {
+        const v = document.getElementById('senha1').value;
+        if (!v) {
+            setFieldState('wrap-senha1', 'msg-senha1', 'error', 'Campo obrigatório.');
+            if (!silent) ToastManager.error('Defina uma senha.', 'Senha obrigatória');
+            return false;
+        }
+        if (!/^[A-Za-zÀ-ÿ]{8}$/.test(v)) {
+            if (!silent) ToastManager.error('A senha deve conter exatamente 8 letras (sem números ou símbolos).', 'Senha inválida');
+            return false;
+        }
+        return true;
+    }
+
+    function validateSenha2(silent = false) {
+        const s1 = document.getElementById('senha1').value;
+        const s2 = document.getElementById('senha2').value;
+        if (!s2) {
+            setFieldState('wrap-senha2', 'msg-senha2', 'error', 'Confirme a senha.');
+            if (!silent) ToastManager.error('Confirme a senha.', 'Confirmação obrigatória');
+            return false;
+        }
+        if (s1 !== s2) {
+            setFieldState('wrap-senha2', 'msg-senha2', 'error', 'As senhas não coincidem.');
+            if (!silent) ToastManager.error('A confirmação de senha não coincide.', 'Senhas diferentes');
+            return false;
+        }
+        setFieldState('wrap-senha2', 'msg-senha2', 'ok', '✓ Senhas coincidem');
+        return true;
+    }
+
+    /* ── Blur listeners para feedback em tempo real ── */
+    document.getElementById('nome').addEventListener('blur',        () => validateNome(true));
+    document.getElementById('dataNasc').addEventListener('blur',    () => validateDataNasc(true));
+    document.getElementById('sexo').addEventListener('change',      () => validateSexo(true));
+    document.getElementById('nomeMaterno').addEventListener('blur', () => validateNomeMaterno(true));
+    document.getElementById('cpf').addEventListener('blur',         () => validateCPF(true));
+    document.getElementById('celular').addEventListener('blur',     () => validateCelular(true));
+    document.getElementById('fixo').addEventListener('blur',        () => validateFixo(true));
+    document.getElementById('endereco').addEventListener('blur',    () => validateEndereco(true));
+    document.getElementById('login').addEventListener('blur',       () => validateLogin(true));
+    document.getElementById('senha1').addEventListener('blur',      () => validateSenha1(true));
+    document.getElementById('senha2').addEventListener('blur',      () => validateSenha2(true));
+
+    /* ═══════════════════════════════════════════════════════
+       SUBMIT — validação completa + localStorage + redirect
+    ═══════════════════════════════════════════════════════ */
+    document.getElementById('cadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Roda todas as validações em ordem, coletando erros
+        const validacoes = [
+            validateNome,
+            validateDataNasc,
+            validateSexo,
+            validateNomeMaterno,
+            validateCPF,
+            validateCelular,
+            validateFixo,
+            validateEndereco,
+            validateLogin,
+            validateSenha1,
+            validateSenha2
+        ];
+
+        // Executa todas (sem silent) para marcar campos e exibir o primeiro toast relevante
+        let tudo_ok = true;
+        for (const fn of validacoes) {
+            if (!fn()) {
+                tudo_ok = false;
+                // Toast já exibido dentro de fn(); interrompe aqui para focar no primeiro erro
+                break;
+            }
+        }
+
+        if (!tudo_ok) return;
+
+        // ── Salva login e senha no localStorage ──
+        const loginVal = document.getElementById('login').value.trim();
+        const senhaVal = document.getElementById('senha1').value;
+
+        // Pega lista existente de usuários ou inicia nova
+        const usuarios = JSON.parse(localStorage.getItem('acolheja_usuarios') || '[]');
+
+        // Checa duplicidade de login
+        if (usuarios.some(u => u.login === loginVal)) {
+            setFieldState('wrap-login', 'msg-login', 'error', 'Login já cadastrado.');
+            ToastManager.error('Este login já está em uso. Escolha outro.', 'Login indisponível');
+            return;
+        }
+
+        usuarios.push({
+            login: loginVal,
+            senha: senhaVal,
+            nome: document.getElementById('nome').value.trim(),
+            criadoEm: new Date().toISOString()
+        });
+        localStorage.setItem('acolheja_usuarios', JSON.stringify(usuarios));
+
+        // ── Feedback de sucesso e redirect ──
+        const btn = document.getElementById('btnCad');
+        btn.classList.add('loading');
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Criando conta...';
+
+        ToastManager.show({
+            type: 'success',
+            title: '🎉 Conta criada!',
+            msg: 'Redirecionando para o login...',
+            duration: 2800
+        });
+
+        setTimeout(() => {
+            window.location.href = 'login.html?cadastro=sucesso';
+        }, 2200);
+    });
+    </script>
+</body>
+</html>

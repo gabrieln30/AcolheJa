@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>AcolheJá - Doações</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="javaScript.js" defer></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar" id="mainNavbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" id="navLogo" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        <i class="fas fa-bars menu-toggle" id="mobileMenuBtn" style="display:none; color:white; cursor:pointer; font-size:1.5rem;"></i>
+        <nav class="menu-navegacao" id="navMenu">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="ferramenta.html">Ferramenta</a>
+            <a href="contato.html">Contato</a>
+            <a href="doacao.html">Doações</a>
+            <div class="search-box">
+                <input type="search" placeholder="Pesquisar..." class="search-input" id="searchInput">
+                <i class="fas fa-search" style="cursor:pointer;"></i>
+            </div>
+            <a href="login.html" class="btn-login-nav">Login</a>
+        </nav>
+    </header>
+
+    <!-- HERO DOAÇÃO -->
+    <section class="hero-doacao anima-scroll">
+        <div>
+            <span class="badge-slogan">Faça a diferença</span>
+            <h1 class="hero-title">Sua doação <br>transforma vidas</h1>
+            <p class="hero-description">
+                Com sua contribuição, conseguimos conectar ainda mais pessoas em situação de
+                fragilidade emocional e financeira a profissionais e voluntários que podem ajudar.
+            </p>
+            <div class="hero-botoes">
+                <a href="#formulario-doacao" class="btn-cta">Doe agora</a>
+                <a href="#transparencia" class="btn-outline">Como usamos os recursos</a>
+            </div>
+        </div>
+        <div style="text-align:center;">
+            <img src="imagens/voluntarios2.jpg" alt="Juntos fazemos mais" style="max-width:100%; border-radius:20px; box-shadow: 0 15px 40px rgba(43,93,167,0.2);">
+        </div>
+    </section>
+
+    <!-- IMPACTO -->
+    <section class="impacto-section">
+        <h2 class="section-title">Nosso Impacto</h2>
+        <div class="impacto-grid">
+            <div class="card impacto-card anima-scroll" style="text-align:center; padding:30px 20px;">
+                <i class="fas fa-users" style="font-size:2.5rem; color:#f3824a; margin-bottom:10px;"></i>
+                <div class="contador" data-target="3200">0</div>
+                <p>Pessoas Acolhidas</p>
+            </div>
+            <div class="card impacto-card anima-scroll" style="text-align:center; padding:30px 20px;">
+                <i class="fas fa-hands-helping" style="font-size:2.5rem; color:#f3824a; margin-bottom:10px;"></i>
+                <div class="contador" data-target="480">0</div>
+                <p>Voluntários Ativos</p>
+            </div>
+            <div class="card impacto-card anima-scroll" style="text-align:center; padding:30px 20px;">
+                <i class="fas fa-city" style="font-size:2.5rem; color:#f3824a; margin-bottom:10px;"></i>
+                <div class="contador" data-target="42">0</div>
+                <p>Cidades Atendidas</p>
+            </div>
+            <div class="card impacto-card anima-scroll" style="text-align:center; padding:30px 20px;">
+                <i class="fas fa-heart" style="font-size:2.5rem; color:#f3824a; margin-bottom:10px;"></i>
+                <div class="contador" data-target="120">0</div>
+                <p>Doadores Mensais</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMULÁRIO DE DOAÇÃO -->
+    <section class="doacao-wrapper" id="formulario-doacao">
+        <h2 class="section-title text-center">Contribua com o AcolheJá</h2>
+        <p style="text-align:center; color:#666; margin-top:-30px; margin-bottom:20px;">Escolha o valor e o método de pagamento que preferir.</p>
+
+        <div class="doacao-grid">
+            <!-- COLUNA: FORMULÁRIO -->
+            <div class="auth-card doacao-form-card">
+                <div class="form-content">
+                    <form id="formDoacao">
+
+                        <!-- ESCOLHA DE VALOR -->
+                        <div class="valores-grid">
+                            <button type="button" class="valor-btn" data-valor="20">
+                                <strong>R$ 20</strong><span>Uma ajuda inicial</span>
+                            </button>
+                            <button type="button" class="valor-btn ativo" data-valor="50">
+                                <strong>R$ 50</strong><span>Mais popular</span>
+                            </button>
+                            <button type="button" class="valor-btn" data-valor="100">
+                                <strong>R$ 100</strong><span>Grande impacto</span>
+                            </button>
+                            <button type="button" class="valor-btn" data-valor="outro">
+                                <strong>Outro</strong><span>Valor livre</span>
+                            </button>
+                        </div>
+
+                        <!-- VALOR CUSTOMIZADO -->
+                        <div class="custom-valor-container" style="display:none; margin-bottom:20px;">
+                            <div class="input-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                                <input type="number" id="valorCustom" placeholder="Digite o valor (R$)" min="1">
+                            </div>
+                        </div>
+
+                        <!-- MÉTODO DE PAGAMENTO -->
+                        <div class="input-container">
+                            <label for="metodoPagamento"><i class="fas fa-wallet" style="margin-right:6px; color:#f3824a;"></i>Método de Pagamento</label>
+                            <select class="metodo-pagamento" id="metodoPagamento">
+                                <option value="">— Selecione —</option>
+                                <option value="pix">PIX</option>
+                                <option value="credito">Cartão de Crédito</option>
+                                <option value="debito">Cartão de Débito</option>
+                            </select>
+                        </div>
+
+                        <!-- ===== SEÇÃO PIX ===== -->
+                        <div id="secaoPix" style="display:none; margin-top:10px;">
+                            <div class="pix-card" style="box-shadow:none; border:1px solid #e0e6ed; padding:20px; border-radius:12px;">
+                                <div class="pix-header" style="font-size:1.2rem;">
+                                    <i class="fas fa-qrcode"></i>
+                                    <strong>Pagamento via PIX</strong>
+                                </div>
+                                <p class="pix-info">Escaneie o QR Code ou copie a chave PIX abaixo.</p>
+                                <div class="qr-container">
+                                    <!-- QR Code placeholder — substitua pelo QR real -->
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?data=00020126360014BR.GOV.BCB.PIX0114acolheja%40ong.com520400005303986540550.005802BR5913Projeto%20AcolheJ%C3%A16009SAO%20PAULO62070503***63048F4C&size=200x200&margin=10"
+                                         alt="QR Code PIX AcolheJá" width="200" style="border-radius:10px; border:1px solid #eee;">
+                                </div>
+                                <div class="chave-container">
+                                    <label>Chave PIX (E-mail)</label>
+                                    <div class="chave-input-group">
+                                        <input type="text" id="chavePix" value="acolheja@ong.com" readonly>
+                                        <button type="button" id="btnCopiarPix">
+                                            <i class="fas fa-copy"></i> Copiar
+                                        </button>
+                                    </div>
+                                    <span class="pix-feedback" id="pixFeedback">✓ Chave copiada!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== SEÇÃO CARTÃO ===== -->
+                        <div id="secaoCartao" class="secao-cartao">
+
+                            <!-- CARTÃO VISUAL ANIMADO -->
+                            <div class="cartao-visual">
+                                <div class="cartao-chip"></div>
+                                <div class="cartao-numero-preview" id="previewNumero">•••• •••• •••• ••••</div>
+                                <div class="cartao-rodape">
+                                    <div>
+                                        <div class="label-cartao">Titular</div>
+                                        <div class="valor-cartao" id="previewNome">NOME DO TITULAR</div>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div class="label-cartao">Validade</div>
+                                        <div class="valor-cartao" id="previewValidade">MM/AA</div>
+                                    </div>
+                                    <i class="fas fa-credit-card bandeira-icon" id="bandeiraCartao"></i>
+                                </div>
+                            </div>
+
+                            <!-- TIPO DO CARTÃO -->
+                            <p style="font-weight:bold; color:#2b5da7; margin-bottom:15px; font-size:0.95rem;">
+                                <i class="fas fa-credit-card" style="color:#f3824a; margin-right:6px;"></i>
+                                <span id="labelTipoCartao">Cartão</span>
+                            </p>
+
+                            <!-- NÚMERO DO CARTÃO -->
+                            <div class="campo-cartao">
+                                <label for="numCartao">Número do Cartão</label>
+                                <div class="input-cartao-wrapper">
+                                    <i class="fas fa-credit-card"></i>
+                                    <input type="text" id="numCartao" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric"
+                                           oninput="document.getElementById('previewNumero').textContent = this.value || '•••• •••• •••• ••••'">
+                                </div>
+                            </div>
+
+                            <!-- NOME DO TITULAR -->
+                            <div class="campo-cartao">
+                                <label for="nomeCartao">Nome do Titular</label>
+                                <div class="input-cartao-wrapper">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="nomeCartao" placeholder="Como está no cartão"
+                                           oninput="document.getElementById('previewNome').textContent = this.value.toUpperCase() || 'NOME DO TITULAR'">
+                                </div>
+                            </div>
+
+                            <!-- VALIDADE + CVV -->
+                            <div class="grid-cartao-2">
+                                <div class="campo-cartao">
+                                    <label for="validadeCartao">Validade</label>
+                                    <div class="input-cartao-wrapper">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <input type="text" id="validadeCartao" placeholder="MM/AA" maxlength="5" inputmode="numeric"
+                                               oninput="document.getElementById('previewValidade').textContent = this.value || 'MM/AA'">
+                                    </div>
+                                </div>
+                                <div class="campo-cartao">
+                                    <label for="cvvCartao">CVV</label>
+                                    <div class="input-cartao-wrapper">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="text" id="cvvCartao" placeholder="•••" maxlength="4" inputmode="numeric">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PARCELAMENTO (só para crédito) -->
+                            <div class="campo-cartao" id="grupoParcelamento" style="display:none;">
+                                <label for="parcelamento">Parcelamento</label>
+                                <select class="select-parcelamento" id="parcelamento">
+                                    <option value="1">1x sem juros</option>
+                                    <option value="2">2x sem juros</option>
+                                    <option value="3">3x sem juros</option>
+                                    <option value="6">6x com juros</option>
+                                    <option value="12">12x com juros</option>
+                                </select>
+                            </div>
+
+                            <!-- AVISO DE SEGURANÇA -->
+                            <div class="aviso-seguranca">
+                                <i class="fas fa-shield-alt"></i>
+                                Seus dados são criptografados com SSL e nunca armazenados em nossos servidores.
+                            </div>
+                        </div>
+
+                        <!-- BOTÃO SUBMIT -->
+                        <button type="submit" class="btn-cta" style="width:100%; margin-top:30px; padding:15px; border-radius:12px; font-size:1.05rem;">
+                            <i class="fas fa-heart" style="margin-right:8px;"></i> Confirmar Doação
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- COLUNA: INFO LATERAL -->
+            <div>
+                <div class="pix-card anima-scroll" style="margin-bottom:30px;">
+                    <h3 style="color:#2b5da7; margin-bottom:15px;"><i class="fas fa-shield-alt" style="color:#32bcad; margin-right:8px;"></i>Segurança garantida</h3>
+                    <p style="color:#666; font-size:0.95rem; line-height:1.6;">
+                        Todas as transações são processadas em ambiente 100% seguro.
+                        Seus dados financeiros são protegidos por criptografia SSL de ponta a ponta.
+                    </p>
+                </div>
+
+                <div class="pix-card anima-scroll">
+                    <h3 style="color:#2b5da7; margin-bottom:15px;"><i class="fas fa-file-invoice" style="color:#f3824a; margin-right:8px;"></i>Comprovante</h3>
+                    <p style="color:#666; font-size:0.95rem; line-height:1.6;">
+                        Após a confirmação do pagamento, você receberá um comprovante
+                        de doação por e-mail, válido para fins de dedução fiscal.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRANSPARÊNCIA -->
+    <section class="transparencia-section" id="transparencia">
+        <h2 class="section-title text-center">Transparência no uso dos recursos</h2>
+        <div class="transparencia-container">
+            <div class="barra-item anima-scroll">
+                <div class="barra-info">
+                    <span><i class="fas fa-hand-holding-heart"></i> Atendimentos diretos</span>
+                    <span>60%</span>
+                </div>
+                <div class="barra-fundo">
+                    <div class="barra-progresso" data-width="60%" style="background:#e83174;"></div>
+                </div>
+            </div>
+            <div class="barra-item anima-scroll">
+                <div class="barra-info">
+                    <span><i class="fas fa-laptop"></i> Manutenção da plataforma</span>
+                    <span>20%</span>
+                </div>
+                <div class="barra-fundo">
+                    <div class="barra-progresso" data-width="20%" style="background:#f3824a;"></div>
+                </div>
+            </div>
+            <div class="barra-item anima-scroll">
+                <div class="barra-info">
+                    <span><i class="fas fa-graduation-cap"></i> Capacitação de voluntários</span>
+                    <span>15%</span>
+                </div>
+                <div class="barra-fundo">
+                    <div class="barra-progresso" data-width="15%" style="background:#32bcad;"></div>
+                </div>
+            </div>
+            <div class="barra-item anima-scroll">
+                <div class="barra-info">
+                    <span><i class="fas fa-cog"></i> Administrativo</span>
+                    <span>5%</span>
+                </div>
+                <div class="barra-fundo">
+                    <div class="barra-progresso" data-width="5%" style="background:#2b5da7;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <h2 class="section-title text-center">Perguntas Frequentes</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <button class="faq-pergunta">Minha doação é segura? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-resposta"><p>Sim. Todas as transações passam por gateways de pagamento certificados e utilizamos criptografia SSL. Nunca armazenamos dados do cartão em nossos servidores.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-pergunta">Recebo comprovante para dedução no IR? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-resposta"><p>Sim. Enviamos um recibo de doação para o e-mail cadastrado, que pode ser utilizado para declaração no Imposto de Renda conforme a legislação vigente.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-pergunta">Posso cancelar uma doação recorrente? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-resposta"><p>Claro. Basta acessar sua conta na plataforma e cancelar a recorrência a qualquer momento, sem multas ou burocracia.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-pergunta">Como os recursos são utilizados? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-resposta"><p>60% vão diretamente para atendimentos, 20% para manutenção da plataforma, 15% para capacitação de voluntários e 5% para custos administrativos. Publicamos relatórios trimestrais de prestação de contas.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="cta-final text-center">
+        <h2>Juntos, chegamos mais longe</h2>
+        <p>Compartilhe o AcolheJá com quem você ama e amplie nossa rede de cuidado.</p>
+        <div style="display:flex; gap:15px; justify-content:center; margin-top:30px; flex-wrap:wrap;">
+            <a href="#formulario-doacao" class="btn-cta">Doe agora</a>
+            <a href="contato.html" class="btn-outline" style="color:white; border-color:rgba(255,255,255,0.7);">Fale conosco</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobre.html">Sobre nós</a></li>
+                    <li><a href="ferramenta.html">Ferramentas</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

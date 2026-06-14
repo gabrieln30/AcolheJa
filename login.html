@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcolheJá - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── Atalho "Esqueci minha senha" reimaginado ── */
+        .esqueci-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin: -8px 0 4px;
+        }
+
+        .link-esqueci-novo {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #f3824a;
+            text-decoration: none;
+            padding: 4px 0;
+            border-bottom: 1.5px solid transparent;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .link-esqueci-novo:hover {
+            color: #d16935;
+            border-bottom-color: #d16935;
+        }
+
+        .link-esqueci-novo i {
+            font-size: 0.75rem;
+        }
+
+        /* ── Banner de redirect (vindo do formulário sem login) ── */
+        .banner-redirect {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #fff8e8, #fff3e0);
+            border: 1.5px solid #f3a000;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            color: #6b4c00;
+            animation: bannerSlide 0.4s ease both;
+        }
+
+        [data-theme="dark"] .banner-redirect {
+            background: linear-gradient(135deg, #2a1a00, #1a1000);
+            border-color: #f3a000;
+            color: #ffcc66;
+        }
+
+        .banner-redirect i { color: #f3a000; font-size: 1.1rem; flex-shrink: 0; }
+
+        @keyframes bannerSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Banner cadastro sucesso ── */
+        .banner-success {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #f0fff6, #e8fff2);
+            border: 1.5px solid #27ae60;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            color: #135c35;
+            animation: bannerSlide 0.4s ease both;
+        }
+        [data-theme="dark"] .banner-success {
+            background: linear-gradient(135deg, #0a2a17, #071a0f);
+            border-color: #27ae60;
+            color: #a3f0c5;
+        }
+        .banner-success i { color: #27ae60; font-size: 1.1rem; flex-shrink: 0; }
+
+        /* ── Toast (reutilizado do cadastro) ── */
+        #toast-container {
+            position: fixed; top: 24px; right: 24px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast {
+            display: flex; align-items: flex-start; gap: 12px;
+            min-width: 300px; max-width: 380px; padding: 14px 18px;
+            border-radius: 14px; font-size: 0.875rem; font-weight: 500;
+            line-height: 1.45; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            pointer-events: all;
+            animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            position: relative; overflow: hidden;
+        }
+        .toast::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            height: 3px; background: rgba(255,255,255,0.45);
+            animation: toastBar var(--toast-dur, 4s) linear forwards;
+        }
+        .toast.removing { animation: toastOut 0.3s ease forwards; }
+        .toast--error   { background:#fff0f0; border:1.5px solid #f8bebe; color:#7a1a1a; }
+        .toast--error .toast-icon { color: #e53935; }
+        .toast--error::after { background: #e53935; opacity: 0.5; }
+        .toast--success { background:#f0fff6; border:1.5px solid #b3e6c8; color:#135c35; }
+        .toast--success .toast-icon { color: #27ae60; }
+        .toast--success::after { background: #27ae60; opacity: 0.5; }
+        [data-theme="dark"] .toast--error   { background:#2a0a0a; border-color:#6b2222; color:#ffb3b3; }
+        [data-theme="dark"] .toast--success { background:#0a2a17; border-color:#1e6b42; color:#a3f0c5; }
+        .toast-icon  { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+        .toast-body  { flex:1; }
+        .toast-title { font-weight:700; margin-bottom:2px; }
+        .toast-msg   { opacity:0.85; }
+        .toast-close { background:none; border:none; cursor:pointer; opacity:0.45;
+                       font-size:0.85rem; padding:0; line-height:1; color:inherit;
+                       flex-shrink:0; margin-top:1px; transition:opacity 0.15s; }
+        .toast-close:hover { opacity:1; }
+        @keyframes toastIn  { from{opacity:0;transform:translateX(60px) scale(0.9)} to{opacity:1;transform:translateX(0) scale(1)} }
+        @keyframes toastOut { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(60px) scale(0.9)} }
+        @keyframes toastBar { from{width:100%} to{width:0%} }
+    </style>
+</head>
+<body>
+    <!-- Aplica dark mode imediatamente -->
+    <script>
+        (function() {
+            const t = localStorage.getItem('acolheja_tema') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
+    <!-- ── TOAST CONTAINER ── -->
+    <div id="toast-container" role="alert" aria-live="assertive" aria-atomic="false"></div>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img class="logo1" src="imagens/logo2.png" alt="AcolheJá Logo">
+            </a>
+        </div>
+        <nav class="menu-navegacao">
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <main class="main-wrapper">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <a href="login.html" class="tab-btn active"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+                <a href="cadastro.html" class="tab-btn inactive"><i class="fas fa-user-plus"></i> Cadastrar</a>
+            </div>
+
+            <div class="form-content">
+
+                <!-- Banner: vindo do formulário sem estar logado -->
+                <div class="banner-redirect" id="bannerRedirect">
+                    <i class="fas fa-lock"></i>
+                    <span>Para enviar o formulário de acolhimento, você precisa estar logado. Faça login abaixo.</span>
+                </div>
+
+                <!-- Banner: cadastro realizado com sucesso -->
+                <div class="banner-success" id="bannerCadastro">
+                    <i class="fas fa-circle-check"></i>
+                    <span>🎉 Conta criada com sucesso! Faça login para continuar.</span>
+                </div>
+
+                <h2>Bem-vindo de volta!</h2>
+                <p>Faça login para acessar seu histórico e continuar seu trabalho.</p>
+
+                <form id="loginForm" novalidate>
+                    <div class="input-container">
+                        <label>E-mail ou Nome</label>
+                        <div class="input-icon">
+                            <i class="far fa-envelope"></i>
+                            <input type="text" id="loginEmail" placeholder="seu@gmail.com ou seu nome" required>
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <label>Senha</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginSenha" placeholder="Digite sua senha" required>
+                            <i class="fas fa-eye" id="toggleLoginSenha" style="cursor:pointer; color:#b0b8c8; margin-left:8px;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Atalho para redefinir senha — mais visível e com ícone -->
+                    <div class="esqueci-wrap">
+                        <a href="senha.html" class="link-esqueci-novo">
+                            <i class="fas fa-key"></i> Esqueci minha senha
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="btnEntrar">Entrar</button>
+                </form>
+
+                <div class="footer-text">
+                    <p>Não tem uma conta? <a href="cadastro.html">Cadastre-se aqui</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo-info">
+                <img src="imagens/logo2.png" alt="AcolheJá Logo" class="footer-logo">
+                <p>Levando acolhimento e suporte a quem mais precisa, de forma rápida, empática e segura.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobre.html">Sobre nós</a></li>
+                    <li><a href="ferramenta.html">Ferramentas</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Projeto AcolheJá - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="javaScript.js"></script>
+    <script>
+        // ── Toggle ver/ocultar senha ──
+        const toggleLoginSenha = document.querySelector('#toggleLoginSenha');
+        const loginSenha = document.querySelector('#loginSenha');
+        if (toggleLoginSenha && loginSenha) {
+            toggleLoginSenha.addEventListener('click', function() {
+                const type = loginSenha.getAttribute('type') === 'password' ? 'text' : 'password';
+                loginSenha.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // ── Toast system ──
+        const ToastManager = {
+            _c: null,
+            _get() { return this._c || (this._c = document.getElementById('toast-container')); },
+            show({ type='error', title='', msg='', duration=4500 }) {
+                const icons = { error:'fas fa-circle-xmark', success:'fas fa-circle-check' };
+                const t = document.createElement('div');
+                t.className = `toast toast--${type}`;
+                t.style.setProperty('--toast-dur', duration + 'ms');
+                t.innerHTML = `<i class="${icons[type]||icons.error} toast-icon"></i>
+                    <div class="toast-body">${title?`<div class="toast-title">${title}</div>`:''}
+                    <div class="toast-msg">${msg}</div></div>
+                    <button class="toast-close" aria-label="Fechar"><i class="fas fa-xmark"></i></button>`;
+                const close = () => { t.classList.add('removing'); t.addEventListener('animationend', () => t.remove(), {once:true}); };
+                t.querySelector('.toast-close').addEventListener('click', close);
+                this._get().appendChild(t);
+                setTimeout(close, duration);
+            },
+            error(msg, title='Erro')     { this.show({ type:'error',   title, msg }); },
+            success(msg, title='Pronto') { this.show({ type:'success', title, msg }); }
+        };
+
+        // ── Banner redirect ──
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('redirect') === 'formulario') {
+            document.getElementById('bannerRedirect').style.display = 'flex';
+        }
+        if (params.get('cadastro') === 'sucesso') {
+            document.getElementById('bannerCadastro').style.display = 'flex';
+        }
+
+        // ── Submit com validação contra localStorage ──
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const loginInput = document.getElementById('loginEmail').value.trim();
+            const senhaInput = document.getElementById('loginSenha').value;
+
+            if (!loginInput || !senhaInput) {
+                ToastManager.error('Preencha o login e a senha.', 'Campos obrigatórios');
+                return;
+            }
+
+            const usuarios = JSON.parse(localStorage.getItem('acolheja_usuarios') || '[]');
+            const usuario  = usuarios.find(u => u.login === loginInput || u.nome === loginInput);
+
+            if (!usuario) {
+                ToastManager.error('Usuário não encontrado. Verifique o login.', 'Usuário inválido');
+                return;
+            }
+            if (usuario.senha !== senhaInput) {
+                ToastManager.error('Senha incorreta. Tente novamente.', 'Senha inválida');
+                return;
+            }
+
+            ToastManager.success('Bem-vindo(a) de volta, ' + usuario.nome.split(' ')[0] + '!', '✅ Login realizado');
+            const btn = document.getElementById('btnEntrar');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Entrando...';
+            btn.disabled = true;
+
+            // Grava sessao compativel com verificarSessao() do javaScript.js
+            localStorage.setItem('acolheja_sessao', JSON.stringify({
+                login:    usuario.login,
+                nome:     usuario.nome,
+                email:    usuario.login,
+                tipo:     'usuario',
+                dataLogin: new Date().toISOString()
+            }));
+
+            setTimeout(() => {
+                window.location.href = 'painel.html';
+            }, 1600);
+        });
+    </script>
+</body>
+</html>
